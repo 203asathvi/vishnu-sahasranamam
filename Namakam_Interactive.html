@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sri Rudram — Namakam</title>
+<style>
+:root {
+  --saffron:#e87c1e; --deep:#8B1A1A; --red:#C0392B;
+  --gold:#c8931a;    --gold-lt:#f0c060; --gold-pale:#fdf3dc;
+  --dark:#2b0a00;    --mid:#5a2200;     --card:#fffdf8;
+  --bg:#fff8f0;      --border:#e8d5a0;
+  --park:#1a7a3a;    --park-lt:#e8f7ee; --park-bd:#2ecc71;
+  --blue:#2e6da4;    --blue-lt:#eaf3ff;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Georgia',serif; background:var(--bg); color:var(--dark); min-height:100vh; padding-bottom:60px; }
+
+/* ── Header ─────────────────────────────────────────────── */
+.header {
+  background:linear-gradient(135deg,var(--deep) 0%,var(--red) 55%,var(--gold) 100%);
+  color:#fff; text-align:center; padding:22px 16px 16px;
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 3px 14px rgba(0,0,0,.35);
+}
+.header-om  { font-size:2rem; display:block; margin-bottom:2px; }
+.header h1  { font-size:clamp(1.3rem,4vw,2rem); font-weight:700; letter-spacing:1px; text-shadow:0 2px 4px rgba(0,0,0,.4); }
+.header h2  { font-size:clamp(.8rem,2.2vw,1.05rem); opacity:.88; margin-top:3px; font-weight:400; }
+
+/* ── Anuvaka (group) nav ─────────────────────────────────── */
+.gnav-section { background:#fff; border-bottom:2px solid var(--border); padding:10px 12px;
+  position:sticky; top:82px; z-index:99; box-shadow:0 2px 6px rgba(0,0,0,.07); }
+.gnav-label { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--gold); font-weight:700; margin-bottom:7px; text-align:center; }
+.gnav { display:flex; justify-content:center; gap:6px; flex-wrap:wrap; }
+.gb {
+  padding:6px 13px; border-radius:20px; border:2px solid var(--gold);
+  background:var(--card); color:var(--gold); font-size:.8rem; font-weight:700;
+  cursor:pointer; transition:all .2s; white-space:nowrap;
+}
+.gb:hover   { border-color:var(--saffron); color:var(--saffron); }
+.gb.active  { background:linear-gradient(135deg,var(--deep),var(--red)); color:#fff; border-color:var(--red); box-shadow:0 3px 10px rgba(192,57,43,.4); }
+
+/* ── Verse bubble nav ────────────────────────────────────── */
+.snav-wrap  { background:rgba(200,147,26,.07); border:1px solid #e8d090; border-radius:12px;
+  padding:11px 14px; margin:12px 16px 0; display:none; max-width:820px; margin-left:auto; margin-right:auto; }
+.snav-wrap.show { display:block; }
+.snav-label { font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--gold); font-weight:700; margin-bottom:8px; }
+.snav       { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
+.sbb {
+  width:38px; height:38px; border-radius:50%; border:2px solid var(--gold);
+  background:var(--card); color:var(--gold); font-size:.82rem; font-weight:700;
+  cursor:pointer; transition:all .18s; display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.sbb:hover  { border-color:var(--saffron); color:var(--saffron); transform:translateY(-2px); }
+.sbb.active { background:linear-gradient(135deg,var(--deep),var(--red)); color:#fff; border-color:var(--red);
+  box-shadow:0 4px 12px rgba(192,57,43,.45); transform:scale(1.12); }
+.sbb.parked { border-color:var(--park) !important; box-shadow:0 0 0 3px rgba(26,122,58,.28) !important; }
+.sbb.parked::after { content:"🔖"; font-size:9px; position:absolute; top:-5px; right:-5px;
+  background:var(--park); border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; }
+
+/* ── Main area ───────────────────────────────────────────── */
+#mc { max-width:820px; margin:18px auto 0; padding:0 16px; }
+
+/* ── Verse Card ──────────────────────────────────────────── */
+.card { background:var(--card); border:1.5px solid var(--border); border-radius:16px;
+  margin-bottom:22px; box-shadow:0 4px 20px rgba(0,0,0,.08); display:none; overflow:hidden; }
+.card.vis { display:block; }
+.card.parked-card { border-color:var(--park-bd); box-shadow:0 4px 20px rgba(26,122,58,.18); }
+
+/* Card header */
+.card-head {
+  background:linear-gradient(90deg,rgba(192,57,43,.9),rgba(200,147,26,.85));
+  padding:11px 16px; display:flex; align-items:center; gap:10px;
+}
+.card-num  { background:rgba(255,255,255,.25); color:#fff; font-size:.75rem; font-weight:800;
+  padding:3px 9px; border-radius:10px; letter-spacing:.5px; }
+.card-title { color:#fff; font-size:.92rem; font-weight:700; flex:1; }
+.park-btn  { margin-left:auto; display:flex; align-items:center; gap:5px;
+  background:rgba(255,255,255,.18); border:1.5px solid rgba(255,255,255,.5);
+  border-radius:14px; padding:4px 11px; color:#fff; font-size:.75rem; font-weight:700;
+  cursor:pointer; transition:all .2s; }
+.park-btn:hover  { background:rgba(255,255,255,.32); }
+.park-btn.parked { background:var(--park); border-color:var(--park-bd); }
+
+/* Card body */
+.card-body { padding:16px; }
+
+/* Sanskrit box */
+.skt-box {
+  background:linear-gradient(135deg,#fffaf0,#fff3e0);
+  border:1px solid #e8c870; border-left:4px solid var(--gold);
+  border-radius:8px; padding:14px 16px; margin-bottom:14px;
+}
+.skt-box::before {
+  content:'🕉  Sanskrit (Transliteration)';
+  display:block; font-size:.7rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  color:var(--gold); margin-bottom:8px;
+}
+.skt-text { font-family:'Courier New',monospace; font-size:.9rem; line-height:1.75; color:#3a1a00; white-space:pre-wrap; }
+
+/* Meaning toggle button */
+.mng-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  background:none; border:2px solid var(--saffron); border-radius:18px;
+  padding:5px 14px; font-size:.8rem; font-weight:700; color:var(--saffron);
+  cursor:pointer; transition:all .2s; margin-bottom:10px;
+}
+.mng-btn:hover { background:var(--saffron); color:#fff; }
+.mng-btn.open  { background:var(--saffron); color:#fff; }
+.mng-btn .arr  { transition:transform .2s; font-size:.75rem; }
+.mng-btn.open .arr { transform:rotate(180deg); }
+
+/* Meaning box */
+.mng-box {
+  display:none; background:var(--blue-lt);
+  border:1px solid #b8d4f0; border-left:4px solid var(--blue);
+  border-radius:8px; padding:14px 16px;
+}
+.mng-box.open { display:block; }
+.mng-box::before {
+  content:'📖  Meaning & Commentary';
+  display:block; font-size:.7rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  color:var(--blue); margin-bottom:8px;
+}
+.mng-text { font-size:.88rem; line-height:1.72; color:#1a3a5c; }
+
+/* Anuvaka intro card */
+.anu-intro {
+  background:linear-gradient(135deg,rgba(139,26,26,.08),rgba(200,147,26,.1));
+  border:1px solid var(--border); border-radius:12px;
+  padding:16px 18px; margin-bottom:18px; text-align:center;
+}
+.anu-intro .anu-tag   { font-size:.75rem; font-weight:800; text-transform:uppercase; letter-spacing:2px; color:var(--saffron); }
+.anu-intro .anu-title { font-size:1.25rem; font-weight:700; color:var(--red); margin:4px 0; }
+.anu-intro .anu-sub   { font-size:.88rem; color:var(--mid); font-style:italic; }
+
+/* ── Park bar ────────────────────────────────────────────── */
+.park-bar {
+  position:fixed; bottom:0; left:0; right:0; display:none;
+  background:linear-gradient(90deg,var(--deep),var(--red));
+  color:#fff; padding:9px 14px; z-index:200;
+  box-shadow:0 -2px 10px rgba(0,0,0,.22);
+  align-items:center; gap:10px; flex-wrap:wrap;
+}
+.park-bar span { font-size:.8rem; flex:1; min-width:80px; }
+.park-save  { background:var(--gold); color:var(--dark); border:none; border-radius:14px;
+  padding:5px 13px; font-size:.77rem; font-weight:800; cursor:pointer; transition:all .2s; white-space:nowrap; }
+.park-save:hover { background:var(--gold-lt); }
+.park-clear { background:rgba(255,255,255,.18); color:#fff; border:1px solid rgba(255,255,255,.3);
+  border-radius:14px; padding:5px 10px; font-size:.72rem; cursor:pointer; }
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--saffron); border-radius:3px; }
+
+@media(max-width:600px) {
+  .gnav-section { top:78px; }
+  .gb { font-size:.72rem; padding:5px 9px; }
+  .sbb { width:33px; height:33px; font-size:.75rem; }
+  .header h1 { font-size:1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-om">ॐ</span>
+  <h1>Sri Rudram — Namakam</h1>
+  <h2>Taittirīya Saṃhitā • Kṛṣṇa Yajur Veda • 11 Anuvakas</h2>
+</div>
+
+<!-- Anuvaka (group) navigation -->
+<div class="gnav-section">
+  <div class="gnav-label">Select Anuvaka</div>
+  <div class="gnav" id="gnav"></div>
+</div>
+
+<!-- Verse bubble navigation -->
+<div class="snav-wrap" id="snavWrap">
+  <div class="snav-label" id="snavLabel">Verses — tap a number to open</div>
+  <div class="snav" id="snav"></div>
+</div>
+
+<!-- Main cards area -->
+<div id="mc"></div>
+
+<!-- Park bar -->
+<div class="park-bar" id="parkBar">
+  <span id="parkLabel">📍 No bookmark saved</span>
+  <button class="park-save" onclick="savePark()">🔖 Bookmark Here</button>
+  <button class="park-clear" onclick="clearPark()">✕ Clear</button>
+</div>
+
+<script>
+// ── DATA ──
+const DATA = [{"num": 1, "title": "Anuvaka 1", "subtitle": "Salutation to Rudra — Pacifying His Wrath", "verses": [{"skt": "", "mng": "NamaHa comes from two roots. Na = not , maHa = me. So NamaHa means = not me. So by uttering 'NamaHa ',we disidentify ourselves from all illusions - our identification with the body and mind. Ultimately, we become empty and realise that we are Atma. Each of the description of Rudra manifests in ourself like nectar which fills an empty cup. NamaHa does not mean salutations. NamaHa is the secret code to empty ourself into a cup to receive the nectar in the form of Rudra- to ultimately realise that WE are Rudra."}, {"skt": "oM namo bhagavate rudraaya ( chanted conventionally in tradition. This verse does not come in the Vedas )", "mng": "namaha to the Lord who is Rudra"}, {"skt": "oM namaste rudra manyava utota ishhave namaH\nnamaste astu dhanvane baahubhyaam-uta te namaH", "mng": "The first stanza is to pacify Lord Rudra and seek His blessings. My namaha to your anger or wrath ( manyava) and also to your arrows ( ishhave) . My namaha  to your bow ( dhanvane) and to your two hands ( baahubhyaam )"}, {"skt": "yaa ta ishhuH shivatamaa shivaM babhuuva te dhanuH\nshivaa sharavyaa yaa tava tayaa no rudra mR^iDaya\nyaa te rudra shivaa tanuur-aghoraa paapa-kaashini", "mng": "O Rudra ! May that arrow ( isshuH) of yours become kindest of all ( shivatamaa) and that bow ( babhuuva) and quiver of arrows ( sharavyaa) be auspicious ( shivam) and make me happy ( mR^iDaya).O Rudra ! You have assumed a benign form ( aghora- not terrible) , a form that destroys our sins ( paapa-kaashini)"}, {"skt": "tayaa nastanuvaa shanta-mayaa girishanta-abhichaakashiihi", "mng": "You are tranquil ( shanta-mayaa) and full of bliss. You reside on the mountain ( girishanta). Please illumine and enlighten us ( abhichaakashiihi)"}, {"skt": "yaamishhum girishanta haste bibharshhy-astave\nshivaaM giritra taaM kuru maa hi(gm)siiH (f) purushhaM jagat\nshivena vachasaa tvaa girisha-achchhaa-vadaamasi\nyathaa naH sarvamijjagadayakshma(gm) sumanaa asat", "mng": "O Lord ! You dwell on the mountain ( girishanta).You hold ( bibharshhy) in your hand ( haste) , the arrow( ishhum) that is ready to be aimed and released ( astave). Please make ( kuru) this arrow auspicious ( shivaam) to the human beings ( purushham) and the entire world ( jagat). Let it not injure ( maa hi(gm) ) anyone. O Lord of the mountain ! We pray ( vadaamasi) to you with auspicious words ( shivena vachasaa) so that we may attain( achchhaa) you ( tvaa). May you make (asat) this entire world ( sarvamij-jagad) free from ills ( ayakshhma(gm) ) . May all live in amity and with good understanding ( sumanaa)"}, {"skt": "adhyavochad-adhivaktaa prathamo daivyo bhishhak", "mng": "O Lord! May you speak in my favour ( adhyavochad). May you guide my speech ( adhivaktaa). You are the foremost ( prathamo-first ) divine healer ( bhishhak)."}, {"skt": "ahii(ge)sh-cha sarvaaJN-jambhayant-sarvaasch-cha yaatu-dhaanyah\nasau yas-taamro aruNa uta babruH suma-NgalaH", "mng": "O Lord! May you destroy ( jambhayant) my visible enemies ( ahii(ge)sh) like scorpions, snakes and tigers and the unseen enemies like the spirits and demons ( yaatu-dhaanyaH - representing inner enemies ). The Sun is copper-red ( taamro), rosy( aruNa) and golden-yellow ( babhruH) at different times. May Rudra in the forms of this Sun be highly auspicious ( suma-NgalaH)"}, {"skt": "ye chemaa(gm) rudraa abhito dikshhu shritaaH sahasra-sho vaishhaa(gm) heDa iimahe", "mng": "There are many other innumerable ( sahasrasho-thousands) Rudras who can be compared to the Sun's rays surrounding us ( abhito) from all directions( dikshhu). May you ward off ( avaiimahe) their anger ( heDa)"}, {"skt": "asau yo vasarpati niilagriivo vilohitaH", "mng": "O Rudra ! You,who have a blue neck ( niilagriivo ) ,take on the form of the red ( vilohitaH) Sun that rises and sets ( avasarpati)"}, {"skt": "utainaM gopaa adR^ishan nadR^ishann-udahaaryaH", "mng": "the cowherds ( gopaa) and the simple women carrying water ( udahaaryaH) behold ( adR^ishan) Your majesty everyday."}, {"skt": "utainaM vishvaa bhuutani sa dR^ishhTo mR^iDayaati naH\nnamo astu niila-griivaaya sahasraakshhaaya miiDhushhe\natho ye asya sattvaanohaM tebhyo karannamaH", "mng": "In fact, the whole world (vishvaa) beholds (dR^ishhTo) Your majesty and is made happy ( mR^iDayaati). O Lord ! You have a blue neck ( niilagriivaa) , innumerable ( sahasra-thousand ) eyes ( akshha) and shower ( miidhushhe) your blessings on us. I offer my namaha ( namo) to you. Also ( atho) I ( aham) offer ( akaran) my namaha to all who follow you (asya sattvaano)"}, {"skt": "pramuJNcha dhanvanastvamubhayor-aartniyor-jyaam", "mng": "O Rudra ! Please release ( pramuJNcha) the bowstring( jyaam) from both ends ( ubhayoraartniyor) of your bow( dhanvanastva),i.e., make the bow ineffective."}, {"skt": "yaash-cha te hasta ishhavaH (f) paraa taa bhagavo vapa\navatatya dhanustva(gm) sahasraakshha shateshhudhe\nnishiirya shalyaanaaM mukhaa shivo naH sumanaa bhava", "mng": "O God ( bhagavo) ! Please take away ( paraavapa) the arrows ( ishhavaH) in your hands ( hasta), viz., please do not hurt us with your bow and arrow. O Lord ! You have innumerable eyes ( sahasraakshha) and innumerable ( shate-hundreds) quivers ( shhudhe). After unstringing your bow, please make the sharp tips ( shalyaanaam) of your shafts blunt ( nishiirya). May these shafts of arrows become (bhava) auspicious ( shivo) and well intentioned ( sumanaa) towards us."}, {"skt": "vijyaM dhanuH kapardino vishalyo baaNavaa(gm) uta\naneshannasyeshhava aabhurasya nishhangathiH", "mng": "O Rudra ( kapardino) ! May your bow ( dhanuH) be without its string. May your quiver ( baanavaa(gm)) have no sharp arrows ( vishalyo).May your arrows ( asyeshhava) lose their capacity to strike and pierce (aneshan). May your sword casing ( nishhaJNgathih) contain very limited power ( aabhur)"}, {"skt": "yaa te hetir-miidhushtama haste babhuuva te dhanuH\ntayaasmaan vishvatas-tvamayakshmayaa paribbhuja", "mng": "O Rudra ! You are the one wh showers blessings ( miiDhushhTama) on us. With that weapon (hetir) and the bow ( dhanuH) in your hands ( haste) , you guard (paribbhuja) us from every trouble in the world ( vishvatas) ensuring that we have no injury or sickness (ayakshhmayaa) - both physical and internal."}, {"skt": "astvaayu-dhaaya-anaatataya dhR^ishhNave\nubhaabhyaamuta te namo baahubhyaaM tava dhanvane", "mng": "O Rudra ! namaha ( namaste) to your potent ( dhR^ishhNave) weapons which are capable of destruction but are not aimed ( anaatataaya) at us. Namaha to your two hands( baahubhyaam) and your bow (tava dhanvane)"}, {"skt": "pari te dhanvano hetirasmaan-vR^iNaktu vishvataH", "mng": "O Rudra! May the arrow of your bow avoid us ( pari vR^iNaktu ) from all sides ( vishvataH -in all ways)"}, {"skt": "atho ya ishhudhistavaare asman-nidhehi tam", "mng": "O Rudra ! Please loosen( nidhehi) your quiver of arrows and keep it far away from us."}, {"skt": "namaste astu bhagavan vishveshvaraaya mahaadevaaya tryambakaaya tripura-antakaaya trikaagni kaalaaya kaala-agni rudraaya niila-kaNThaaya mr^ityuJN-jayaaya sarveshvaraaya sadaa-shivaaya shriiman mahaadevaaya namah", "mng": "( This verse is not from the Vedas. It is recited conventionally in tradition at the end of 1st Anuvaka ) I offer my namaha( namaste ) to the God: Who is the Lord of the universe( vishveshvaraa), who is the great god ( mahaa-devaa); who has three eyes ( tryambakaa); who is the annihilator of tripura - the city of demon; tripura also represents our ego ; ( tripura antaka); who is the master of sacrificial fire of three kinds ( trikaagni); who is the rudra who consumes everything as the fire of kala-agni at the time of destruction; one whose throat is blue ( niila-kanthaa); who is the conqueror of death ( mr^ityuJNjayaa); who is the lord of all ( sarveshvara); who is always auspicious ( sadaa-shiva) .Namaha to rudra who is celebrated and the great god ( shriiman-mahaadevaa)"}]}, {"num": 2, "title": "Anuvaka 2", "subtitle": "Salutations to Rudra as Lord of All Creation", "verses": [{"skt": "namo hiraNya-baahave senaanye dishaaM cha pataye namo namo\nvR^ikshebhyo hari-keshebhyah (f) pashuunaaM pataye namo namah", "mng": "In this stanza,Rudra is praised and realised as being in every aspect of Creation. O Rudra ! My namaha to You.You have golden hands ( hiraNya-baahave) and are the leader of the armies ( senaanye ) My namaha to You - Lord ( pataye) of the directions ( dishaaM ) and the plants and trees ( vR^ikShebhyo ), Lord of the trees tufted with green leaves ( hari-keshebhyaH ) and Lord of the animals ( pashu - cattle )"}, {"skt": "saspiJNjaraaya tvishhiimate pathiinaaM pataye namo namo babhushaaya vivyaadhine.annaanaaM pataye namo namo", "mng": "My namaha to You who is brilliant( tvishhiimate). SaspiJNjaraa is a pure sound of the Vedas which does not have a translated meaning. ( remember the genesis, the cosmic sounds are Vedas, they are beyond Sanskrit. Sanskrit is derived from the sounds of the Vedas ). My namaha to You- Lord of the pathways ( pathiinaaM ) and the brown One ( babhlushaaya ) My namaha to the one who pierces ( vivyaadhine ) My namaha( namo ) to You - Lord ( pataye ) of the varieties of food ( annaanaaM )"}, {"skt": "hari-keshaa-yopaviitine\npushhTaanaaM pataye namo namo", "mng": "My namaha to You - whose hair is evergreen, youthful ( hari-kesh ) , Who wears the sacred thread ( upaviitiine ) and is the Lord of those who are well endowed and nourished ( pushhTaaNaM )"}, {"skt": "bhavasya hetyai jagataaM pataye namo namo rudraay-aatataavine", "mng": "My namaha to You Who helps us overcome the afflictions ( hetyai ) of this world ( bhavasya ). My namaha to You Who is the Lord of this world ( jagataaM ) and to the Rudra Who protects us with His unstrung bow ( aatataavine )."}, {"skt": "kshetraaNaaM pataye namo namah suutaaya-ahantyaaya\nvanaanaaM pataye namo namo", "mng": "My namaha to You Who is the protector of an area / space / field ( kshetraaNaaM ) - both physical as well as spiritual fields of wisdom and knowledge. My namaha to You Who is the charioteer ( suutaaya ), Who has no end ( ahantyaaya ) and Who is the Lord of the forests ( vanaanaaM )"}, {"skt": "rohitaaya sthapataye vR^ikshaaNaaM pataye namo namo mantriNe", "mng": "My namaha to You Who is crimson-coloured ( rohitaaya ) and Who is the master and protector of trees ( vR^ikshhaaNaM ) and the Lord of the mantras ( mantriNe)"}, {"skt": "vaaNijaaya kakshaaNaam pataye namo namo bhuvantaye vaarivaskR^iyaayaushhadhiinaaM pataye namo nama", "mng": "My namaha to You Who brings valuables ( vaaNijaaya-traders),Who is Lord of all hidden knowledge ( kakshaaNaM ) - impenetrable and dense clumps or thickets ) , Who has expanded the world ( bhuvantaye ) My namaha to You Who is lord ( pataye ) of all riches ( vaarivaskR^itaa ) and medicinal herbs ( yaushhadhii )."}, {"skt": "uchchair-ghoshhaay-aakrandayate pattiinaaM pataye namo namah kR^itsnaviitaaya dhaavate sattvanaaM pataye namah", "mng": "My namaha to the loud praise ( uchchair-ghoshhay ) of Your devotees and the screaming ( aakrandayate ) of the foes.My namaha to You Who is the Lord of the foot soldiers ( pattiinaaM) My namaha to You Who is ever eager to rush ( dhaavate ) to the rescue of the virtuous people ( satvanaaM ) and Who surrounds and destroys one's enemies ( kR^itsnaviitaaya),both external and internal."}]}, {"num": 3, "title": "Anuvaka 3", "subtitle": "Salutations to Rudra as Protector & Guardian", "verses": [{"skt": "namah saha-maanaaya nivyaadhina aavyaadhiniinaaM pataye namo namaH", "mng": "My namaha to You Who subdues the enemies ( saha-maanaaya ) and strikes at them repeatedly (nivyaadhina ) and Who is the Lord ( pataye ) of such armies ( aavyaadhiniinaaM )"}, {"skt": "kakubhaaya nishaa~NgiNe stenaanaaM pataye namo namo nishha~NgiNa ishhudhimate taskaraaNaam pataye", "mng": "My namaha to You Who are the leader ( kakubhaaya ),Who is attached to His devotees ( nishhaJNgiNe), Who is the Lord of the thieves who steal discretely ( stenaanaaM) and Who owns the quiver ( ishhudhimate ).My namaha to You Who is the Lord of the robbers who rob openly ( taskaraaNaaM)"}, {"skt": "namo namo vaJNchate parivaJNchate staayuunaaM pataye namo namo nicherave", "mng": "My namaha to You Who is the Lord of those who worm themselves into the confidence of others before cheating them occasionally ( vaJNchate ),those who systematically cheat ( parivaJNchate ) and the burglars ( staayuunaaM)"}, {"skt": "paricharaay-aaraNyaanaaM pataye namo namah sR^ikaavibhyo jighaa(gm)sadbhyo mushhNataaM", "mng": "My namaha to You Who is constantly moving ( nicherave ),Who is the Lord of the forests ( aaraNyaanaaM), Who wields the weapon ( sR^ikaa ) that destroys our undesirable tendencies and Who is the Lord of the destructive ones ( jighaa(gm) sadbhyo) and the Lord of thieves ( mushhNataaM )"}, {"skt": "pataye namo namo.asimadbhyo naktan-charadbhyaH (f) prakR^intaanaaM pataye namo nama", "mng": "My namaha to You Who bears the form of  a swordsman ( asimadbhyo ) and Who moves about in the night ( naktan-charadbhyah ).My namahas to You Who is the Lord of those who steal and kill ( prakR^intaanaaM)."}, {"skt": "ushhNiishhiNe giri-charaaya kuluJNchaanaaM pataye namo nama ishhu-madbho dhanvaa-vibhyash-cha", "mng": "My namaha to You Who has a light ( ushhNiishhiNe - head turban ) , Who climbs the mountains ( giri-charaaya ) and Who is the Lord of those who grab land ( kuluJNchaanaaM). My namaha to You Who carries arrows ( ishhu) and bows ( dhanvaa )"}, {"skt": "vo namo nama aatanvaanebhyaH (f)\nprati-dadhaanebhyasch-cha vo namo\nnama aayachchhadbhyo visR^ijadbhyasch", "mng": "My namaha to You Who stretches the bow ( aatanvaanebhya ) and places the arrows in the bow ( prati-dadhaanebhyash ) My namaha to You Who bends the bow ( aayachchadbhyo ) and releases it ( visR^ijadbhyasch )"}, {"skt": "vo namo namo.asyadbhyo\nvidhyad-bhyash-cha vo namo nama\naasiinebhyaH shayaane-bhyash-cha", "mng": "My namaha to You Who hurts ( asyadbhyo) and pierces the target ( vidhyad-bhyashcha ) My namaha to You Who is seated ( aasiinebhyaH ) and reclining ( shayanebhyashcha )"}, {"skt": "vo namo namaH svapadbhyo jaagrad-\nbhyash-cha vo namo namas-tishhThad-\nbhyo dhaavad-bhyash-cha vo namo", "mng": "My namaha to You Who exist in the form of dream state ( svapadbhyo ) and the state of complete wakefulness ( jaagrad-bhyash) My namaha to You Who stands still ( tishhThadbhyo ) and running ( dhaavad-bhyash)"}, {"skt": "namaH sabhaabhyaH sabhaa-pati-\nbhyash-cha vo namo namo asvebhyo-", "mng": ".ashva-patibhyashcha vo namaH My namaha to You Who exist in the forms of those who attend assembly ( sabhaabhyaH ) and those who preside over the assembly ( sabhaa-pati ) My namaha to You Who exist in the form of horses ( ashvebhyo - life energies ) and Who is the Lord of horses ( ashva-pati )"}]}, {"num": 4, "title": "Anuvaka 4", "subtitle": "Salutations to Rudra in All Forms & Occupations", "verses": [{"skt": "nama aavyaadhiniibhyo vividh-\nyantiibhyash-cha vo namo nama", "mng": "My namaha to You Who can strike and pierce ( the veil of illusion ) from all sides ( aavyadhiniibhyo ) and in manifold ways ( vividh-yantiibhyash )"}, {"skt": "ugaNaabhyas-tR^i(gm)hatiibhyash-\ncha vo namo namo gR^itsebho\ngR^itsa-patibhash-cha vo namo namo", "mng": "My namaha to You Who exist in the form of energies that are benign ( ugaNaabhyas ) and those that are fierce ( tR^i(gm)hatiibhyash) My namaha to You Who exist in the form of those who hanker after the sensory world ( gR^itsebhyo ) and their Lord ( gR^itsapatibhyash)"}, {"skt": "vraatebhyo vraata-pati bhyash-cha\nvo namo namo gaNebhyo gaNapati-\nbhyashcha vo namo namo viruupebhyo\nvishva-ruupebhyash-cha vo namo", "mng": "My namaha to You Who exist in the form of variety of people ( vraatebhyo )or tendencies ( vritti) and as their Lord ( vraata-pati ).This can also mean ritual vow and Lord of ritual vows. My namaha to You Who exist in the form of attendants of Rudra ( gaNebhyo ) and as their Lord ( gaNapati ). My namaha to You Who exist as the Formless one ( viruupebhyo ) and as the One with the Cosmic Form ( vishva-rupebhyash)"}, {"skt": "namo mahad-bhaH,kshullake0\nbhyash-cha vo namo namo\nrathibhyo.arathebhyash-cha vo namo", "mng": "My namaha to You Who is great ( mahad-bhyaH) and small (kshullake-bhyash) My namaha to You Who has chariots ( rathibhyo) and who is also chariot-less ( arathebhyash) (Note  Chariot also refers to our gross and subtle bodies )"}, {"skt": "namo rathebhyo ratha-pati-bhyash-\ncha vo namo namaH senaabhyaH\nsenaa-nibhyash-cha vo namo", "mng": "My namaha to You Who exist in the form of chariots ( rathebhyo ) and as their Lord ( ratha-pati ) My namaha to You Who exist in the form of soldiers or army ( senaabhyaH) and as their Lord ( sena-nibhyash)"}, {"skt": "namaH,kshattR^ibhyaH\nsangrahiitR^ibhyash-cha vo namo\nnamas-takshabhyo ratha-", "mng": "My namaha to You Who exist in the form of those who teach and train charioteers ( kshattR^ibhyaH ) and those who drive the chariots themselves ( sangrahiitR^ibhyash) My namaha to You Who exist in the form of carpenters ( takshabhyo ) and chariot makers ( ratha-kaarebhyash)."}, {"skt": "kaarebhyash-cha vo namo namaH\nkulaalebhyaH karmaare0bhyash-cha", "mng": "My namaha to You Who exist in the form of potters ( kulaalebhyaH) and as black-smiths,viz,those who work with metal ( karmaare-bhyash)"}, {"skt": "vo namo namah ( f) puJNjishhTebhyo\nnishaadebhyash-cha vo namo nama", "mng": "My namaha to You Who exist in the form of fowlers ( puJNjishhTebhyo) My namaha to You Who exist in the form of fishermen ( nishhaadebhyash)"}, {"skt": "ishhukR^idbhyo dhanva-\nkR^idbhyash-cha vo namo namo", "mng": "My namaha to You Who exist in the form of makers of arrows ( ishhukR^idbhyo) and makers of bows ( dhanva-kR^idbhyash)"}, {"skt": "mr^iga-yubhyaH shvanibhyash-cha\nvo namo namaH shvabhyaH shvapati-\nbhyash-cha vo namaH", "mng": "My namaha to You Who exist in the form of hunters (mR^iga-yubhyaH) and keepers of hounds ( shvanibhyash) MY namaha to You Who exist in the form of dogs ( shvabhyaH) and as their Lord (shvapatibhyash)"}]}, {"num": 5, "title": "Anuvaka 5", "subtitle": "The Eight Divine Pairs of Salutations", "verses": [{"skt": "namo bhavaaya cha rudraaya cha\nnamaH sharvaaya cha pashu-pataye", "mng": "My namaha to You Who is the Source of all beings ( bhavaaya ) and the Destroyer ( rudraaya ) of all.My namaha to You Who is the cause of dissolution ( sharvaaya ) and the protector of all beings ( pashu-animals)"}, {"skt": "cha namo niila-griivaaya cha\nshiti-kaNThaaya cha namaH", "mng": "My namaha to You Who has a blue neck ( niila-griivaaya ) and blue throat ( shiti-kaNThaaya )"}, {"skt": "kapardine cha vyupta-keshaaya\ncha namaH sahasraakshaaya cha\nshata-dhanvane cha namo", "mng": "My namaha to You Who wears Your hair in a braid ( kapardine ) and is clean shaven ( vyupta-keshaaya - no hair ) My namaha to You Who has innumerable ( sahasra-thousand ) eyes ( akshaaya ) and many ( shata-hundred ) bows ( shata-dhanvane )"}, {"skt": "girishaaya cha shipi-vishhTaaya\ncha namo miiDhushhTamaaya", "mng": "Mynamaha to You Who resides in mountains ( girishaaya) and in the living beings as their inner controller( shipi-vishhTaaya ) and Who showers us with plenty of everything ( miiDhushhTamaaya )"}, {"skt": "cheshhumate cha namo hrasvaaya\ncha vaamanaya cha namo bR^ihate", "mng": "My namaha to You Who holds the arrows ( cheshhumate ) My namaha to You Who are short ( hrasvaaya ),a dwarf ( vaamanaaya ) and a giant ( bR^ihate ),i.e,One Who is very vast"}, {"skt": "cha varshhiiyase cha namo\nvR^iddhaaya cha saMvR^idhvane cha", "mng": "My namaha to You Who showers us with energies ( varshhiiyase ),Who is ancient ( vR^iddhaaya - old ) and Whose glory is sung ( saMvr^idvane )"}, {"skt": "namo agriyaaya cha prathamaaya\ncha nama aashave cha-ajiraaya cha\nnamaH shiigriyaaya cha shiibhyaaya", "mng": "My namaha to You Who is the chief or leader ( agriyaaya ) and Who is most important ( prathamaaya - first ). My namaha to You Who pervades ( aashave ),Who moves swiftly ( ajiraaya ) and speedily ( shiighriyaaya )"}, {"skt": "cha nama uurmyaaya cha-avasvanyaaya\ncha namaH srotasyaaya", "mng": "My namaha to You Who came Himself quickly and gracefully like water ( shiibhyaaya) and Who is in the midst of waves ( uurmyaaya ),amid still waters ( uurmyaaya ) and among a stream ( srotasyaaya )"}, {"skt": "cha dviipyaaya cha", "mng": "My namaha to You Who is in an island ( dviipyaaya )"}]}, {"num": 6, "title": "Anuvaka 6", "subtitle": "Salutations to Rudra in All Stages & States", "verses": [{"skt": "namo jyeshhThaaya cha kanishhThaaya\ncha namaH (f) puurvajaaya cha-aparajaaya\ncha namo madhyamaaya", "mng": "My namaha to You Who is the senior-most ( jyeshhThaaya ) and the youngest ( kanishhThaaya ); Who is the first born ( puurva-jaaya ) ; Who is born later ( aparajaaya-born later ) and Who is born in the middle ( madhyamaaya -was born in the middle )"}, {"skt": "cha-apagalbhaaya cha namo jaghanyaaya\ncha budhniyaaya cha namaH\nsobhyaaya cha prati-saryaaya cha", "mng": "My namaha to You Who exist in the form of a young person with undeveloped senses ( apagalbhaaya ) , Who is born from the hindborn ( jaghanyaaya ) and to Him in the source ( budhniyaaya ) ;  Who is present in both vice and virtue ( sobhyaaya ) and Who is our protector ( prati-saryaaya - amulet )"}, {"skt": "namo yaamyaaya cha kshemyaaya cha\nnama urvaryaaya cha khalyaaya cha", "mng": "My namaha to You Who controls death ( yaamyaaya ) and grants liberation ( kshemyaaya );Who is found in green fields that need ploughing ( urvaryaaya ) and on farm-yards ( khalyaaya )"}, {"skt": "namaH shlokyaaya chaa.avasaanyaaya\ncha namo vanyaaya cha kakshyaaya", "mng": "My namaha to You Who is established in shlokas ( shlokyaaya-mantras ) and in the end ( avasaanyaaya - end of 1.life  2.Vedas or Vedanta ) ; Who is in the forests ( vanyaaya ) and in the bushes ( kakshyaaya )."}, {"skt": "cha namaH shravaaya cha pratishravaaya\ncha nama aashushheNaaya\nchaashurathaaya cha namaH shuuraaya", "mng": "My namaha to You Who exist in the form of sound ( shravaaya ) and its echo ( pratishravaaya ) My namaha to You Whose army moves swiftly ( aashusheNaaya ) and Whose chariots moves fast ( aashu-rathaaya )"}, {"skt": "cha-avabhindate cha namo varmiNe\ncha varuuthine cha namo bilmine\ncha kavachine cha namaH shrutaaya\ncha shruta-senaaya cha", "mng": "My namaha to You Who is the warrior-hero ( shuuraaya ) and the destroyer of foes (avabhindate ). My namaha to You Who has an armour ( varmiNe),a residence ( varuuthine ) and a helmet (bilmine ) My namaha to You Who has an armour ( kavachine );Who is praised ( shrutaaya ) and Whose army is praised ( shruta-senaaya )"}]}, {"num": 7, "title": "Anuvaka 7", "subtitle": "Salutations to Rudra as Warrior & Messenger", "verses": [{"skt": "namo dundubhyaaya cha-ahanyaaya\ncha namo dhR^ishhNave cha\npramR^ishaaya cha namo duutaaya cha\nprahitaaya cha namo nishha-Ngine", "mng": "My namaha to You Who is in the form of a drum ( dundubhyaaya ) and a drum-stick ( ahananyaaya ); Who is bold ( dhR^ishhNave ) and cautious ( pramR^ishaaya ) My namaha to You Who exist in the form of a messenger (duutaaya ) and a special representative sent for special purposes ( prahitaaya ) and Who bears the sword ( nishha-NgiNe )"}, {"skt": "cheshhudhimate cha namas-tiikshNeshhave\nchaayudhine cha namaH\nsvaayudhaaya cha sudhanvane cha\nnamaH srutyaaya cha pathyaaya cha\nnamaH kaatyaaya cha niipyaaya", "mng": "My namaha to You Who wields the quiver ( cheshhudhimate ),Who has sharp arrows ( tiikshNeshhave ) and many weapons ( aayudhine ) My namaha to You Who has Your own weapon - Trishula ( svaayudhaaya ) and bow - Pinaka ( sudhanvane ) My namaha to You Who walks on small paths ( srutyaaya ) and on well-developed roads ( pathyaaya);and Who is in marshy places ( kaaTyaaya ) and in pools ( niipyaaya )"}, {"skt": "cha namaH suudyaaya cha sarasyaaya\ncha namo naadyaaya cha\nvaishantaaya cha namaH kuupyaaya", "mng": "My namaha to You Who is in the ditch ( suudyaaya ) and the lake ( sarasyaaya ); Who exist as the water in the river -current (naadyaaya ) and as the water in a pool ( vaishantaaya ) My namaha to You Who exist as water in a well ( kuupyaaya ) and in a pit (avaTyaaya )"}, {"skt": "cha-avaTyaaya cha namo varshhyaaya\ncha-avarshhyaaya cha namo meghyaaya\ncha vidyutyaaya cha nama iidhriyaa", "mng": "My namaha to You Who exist as water of the rains ( varshhyaaya) and as water in the seas and springs that do not depend on rain ( avarshhyaaya ) My namaha to You Who exist as clouds ( meghyaaya ),lightning (vidyutyaaya) and the clear autumn sky ( iidhriyaaya )"}, {"skt": "ya chaatapyaaya cha namo vaatyaaya\ncha reshhmiyaaya cha namo vaastavyaaya\ncha vaastu paaya cha", "mng": "My namaha to You Who exist as the hot Sun ( aatapyaaya ) ,as the rain with strong wind ( vaatyaaya ) and as hail-storm ( reshhmiyaaya ) My namaha to You Who exist as wealth ( vaastavyaaya ) and as the One Who protects  this wealth ( vaastu paaya )"}]}, {"num": 8, "title": "Anuvaka 8", "subtitle": "Salutations to Shiva — The Auspicious Lord", "verses": [{"skt": "namaH somaaya cha rudraaya cha\nnamas-taamraaya cha-aruNaaya\ncha namaH sha-Ngaaya cha\npashu-pataye cha nama ugraaya cha", "mng": "My namaha to You Who removes all miseries ( rudraaya ) and Who is the Lord of Divine nectar ( somaaya ) of bliss. My namaha to You Who have the crimson-red ( taamraaya ) colour of the rising Sun and the golden hue ( aruNaaya ) of the Sun that has risen. My namaha to You Who grants us happiness ( sha-Ngaaya ) and Who is the Lord of all beings ( pashu-animal ) and are fierce ( ugraaya )"}, {"skt": "bhiimaaya cha namo agre-vadhaaya\ncha duure-vadhaaya cha namo\nhantre cha haniiyase cha namo\nvR^ikshebhyo hari-keshebhyo namas-\ntaaraaya namash-shaMbhave cha", "mng": "My namaha to You Who is terrifying and strikes terror at sight ( bhiimaya ); Who strikes from the front ( agre-vadhaaya );Who strikes from afar ( duure-vadhaaya ) ; Who destroys enemies ( hantre )and Who destroys all at the time of final dissolution ( haniiyase ) My namaha to You Who exist in the form of trees ( vR^ikshebhyo) and green foliage ( hari-keshebhyo ); Who is established in the OM and help us to cross the ocean of birth and death ( taaraaya ) ; Who helps us to attain ( bhave-become ) bliss and peace of the other world ( shaMbhave )"}, {"skt": "mayo-bhavee cha namaH sha-Nkaraaya\ncha mayas-karaaya cha namaH\nshivaaya cha shiva-taraaya cha\nnamas-tiirthyaaya cha kuulyaaya", "mng": "My namaha to You Who help us to attain bliss and peace of this world ( mayobhave ); Who creates ( karaaya - does ) bliss and peace of other world ( sha-Nkaraaya ) and bliss and peace of this world ( mayaskaraaya ) My namaha to You Who are auspicious ( shivaaya ) and more auspicious than all others ( shiva-taraaya ); Who is present in holy places ( namas-tiirthyaaya ) and on the banks of rivers ( kuulyaaya )"}, {"skt": "cha namaH (f) paaryaaya\ncha-avaaryaaya cha namaH (f)\nprataraNaaya chottaraNaaya cha\nnama aataaryaaya chaaladyaaya\ncha namaH shashhpyaaya cha", "mng": "My namaha to You WHo are on the other shore ( paaryaaya ) and on this shore as well ( avaaryaaya );Who has helped us take this birth across the ocean of death - a birth that will help us overcome the cycle of birth and death ( prataraNaaya ).Having helped us come here,You also help us cross this ocean of birth and death and reach the other side ( uttaraNaaya ). My namaha to You Who exists as the One Who is born again and again in this world ( aataaryaaya );Who tastes the fruits of all actions ( aalaadyaaya ) and Who exist in the form of tender grass ( shashhpyaaya )."}, {"skt": "phenyaaya cha namaH sikatyaaya\ncha pravaahyaaya cha", "mng": "My namaha to You Who exist in the form of foam in waves or water ( phenyaaya );Who exist in the form of sand ( sikatyaaya ) and flowing water ( pravaahyaaya )"}]}, {"num": 9, "title": "Anuvaka 9", "subtitle": "The Great Surrender & Closing Prayers", "verses": [{"skt": "nama iriNyaaya cha prapathyaaya\ncha namaH ki(gm)shilaaya cha\nkshayaNaaya cha namaH", "mng": "My namaha to You Who exist in saline tracts ( iriNyaaya ),in well-trodden pathways ( prapathyaaya ),in rocky,rugged and uninhabitable places (ki(gm)shilaaya ) as well as in habitable places ( kshayaNaaya)"}, {"skt": "kapardine cha pulastaye cha namo\ngoshhThyaaya cha gR^ihyaaya cha", "mng": "My namaha to You Who has matted locks ( kapardine ) and wavy,curly tresses ( pulastaye ) and Who exist in places of knowledge ( goshhThyaaya - cow pens ) and in homesteads ( gR^ihyaaya )"}, {"skt": "namas-talpyaaya cha gehyaaya\ncha namaH kaaTyaaya cha", "mng": "My namaha to You Who reclines on couches ( talpyaaya ) and in stately mansions ( gehyaaya ) and Who exist in thorny,impenetrable forest-places ( kaaTyaaya )"}, {"skt": "gahvareshhThaaya cha namo\nhradayyaaya* cha niveshhpyaaya", "mng": "My namaha to You Who exist in mountain caves ( gahvareshhThaaya ),in deep waters ( hradayyaaya ) and in the dew drops ( niveshhpyaaya ) * An extremely common mistake in recitation - hradayyaaya is often mispronounced as hrdayyaaya.It is HRADA not HR^IDA. Hrada refers to the deep waters while hR^ida refers to the heart"}, {"skt": "cha namaH (f) praa (gm)-savyaaya cha\nrajasyaaya cha namaH", "mng": "My namaha to You Who exist in minute,atomic and invisible dust ( paa(gm)-savyaaya) and in visible particles of dust ( rajasyaaya )"}, {"skt": "shushhkyaaya cha harityaaya cha\nnamo lopyaaya cholapyaaya cha\nnama uurvyaaya cha suurmyaaya cha\nnamaH (f) parNyaaya cha parNashadyaaya\ncha namo.apaguramaaNaaya", "mng": "My namaha to You Who exist in dry fire-wood ( shushhkyaaya ),in green,wet grass-lands ( harityaaya ),in hard,barren soil ( lopyaaya ) and in coarse grass (ulapyaaya ). My namaha to You Who exist in the vegetation that is grown on earth ( uurvyaaya ) and in the river that has fair waves ( suurmyaaya). My namaha to You Who exist in green leaves ( parNyaaya ) and the dried ones ( parNashadyaaya ) My namaha to You Who has uplifted arms ( apaguramaaNaaya )"}, {"skt": "chaabhighnate cha nama aakhkhidate\ncha prakhkhidate cha namo vaH\nkirikebhyo devaanaa(gm) hR^idayebhyo\nnamo vikshiiNakebhyo namo", "mng": "My namaha to You Who strikes from the front ( aabhighnate );Who causes afflictions that are slight ( aakhkhidate) and serious ( prakhkhidate). My namaha to You Who showers wealth ( kirikebhyo ) and resides in the hearts ( hR^idayebhyo) of the gods and virtuous people ( devaanaa(gm))"}, {"skt": "vichinvatkebhyo nama aanirhatebhyo\nnama amiivatkebhyaH", "mng": "My namaha to You Who are undecaying ( vikshiiNakebhyo);Who gathers for us and grants our desired objects ( vichinvatkebhyo);Who destroys our sins in all forms (aanirhatebhyo) and Who exist even in the gross forms of those who have rejected the Inner Self ( aamivatkebhyaH)."}]}, {"num": 10, "title": "Anuvaka 10", "subtitle": "Prayer of Surrender & Seeking Rudra's Blessings", "verses": [{"skt": "draape andhasaspate\ndaridran-niilalohita", "mng": "O Rudra ! You are the dispenser of all food ( andhasaspate ) and are dark blue ( niila ) in the neck and red ( lohita ) elsewhere.You make sinners lead contemptible lives ( draape ) and choose to remain poor ( daridran ) even amongst all riches. *Draapi here ( draape ) is also a Vedic word which does not find reference in Sanskrit*"}, {"skt": "eshhaaM purushhaaNaam-eshhaaM", "mng": "O Rudra ! Frighten not these ( eshhaaM) people ( purushhaaNaam) who are near and dear to us."}, {"skt": "pashuunaaM maa bher-maa.aro mo\neshhaaM kinchan-aamamat", "mng": "O Rudra ! Frighten not these cattle ( pashuunaaM) of ours.let not even one ( kinchan) among these ( relations and cattle ) be frightened ( maa bher ),perish (maa.aro) or get' ill ( mo aamamat)."}, {"skt": "yaa te rudra shivaa tanuuH shivaa\nvishvaaha-bheshhajii", "mng": "O Rudra ! We invoke that auspicious ( shivaa ) form of Yours that is auspicious and healing ( bheshhajii) for all days ( vishvaaha)."}, {"skt": "shivaa rudrasya bheshhajii tayaa no\nmR^iDa jiivase", "mng": "O Rudra ! With this auspicious and healing form of Yours,grant us bliss ( mR^iDa ) for life ( jiivase)."}, {"skt": "imaa(gm) rudraaya tavase kapardine\nkshaya-dviiraaya prabharaamahe matim", "mng": "O Rudra ! You are strong ( tavase),have matted hair ( kapardine ) and destroy foes ( kshaya-dviiraaya ) May we foster and nourish our intellect ( prabharaamahe ) and mind ( matim) with worship and meditation on You."}, {"skt": "yathaa naH shamasad\ndvipade chatushhpade vishvaM\npushhTaM graame asmin-nanaaturam", "mng": "O Rudra ! Let Your grace and this attitude of ours lead to happiness ( sham) for all humans ( dvipade) and animals ( chatushhpade ),and for all members of this community ( graame-village ).May all beings of this world ( vishvaM) be well-nourished ( pushhTaM) and free from diseases ( anaaturam)."}, {"skt": "mR^iDaa no rudrota no mayaskR^idhi\nkshaya-dviiraaya namasaa vidhema te", "mng": "O Rudra ! Confer on us happiness ( mR^iDaa ) in this world and in the next.O Rudra ! You Who have destroyed our sins ( kshaya-dviiraaya).We serve and worship You with our namaha ( namasaa vidhema)"}, {"skt": "yachchhaM cha yosh-cha\nmanur-aayaje pitaa tadashyaama\ntava rudra praNiitau", "mng": "O Rudra ! By Your blessings ( tava praNiitau),let us obtain (ashyaama) that happiness ( yachchhaM) and freedom from sorrow ( yoshcha) which Manu,our ancestor and father ( pitaa ) sought for and obtained."}, {"skt": "maa no mahaantam-uta maa no arbhakaM\nmaa na ukshantam-uta maa na ukshitam", "mng": "O Rudra ! Do not ( maa ) afflict the elders ( mahaantam), the tender babies ( arbhakaM),the youth capable of procreation ( ukshantam) and the child in the womb ( ukshitam)."}, {"skt": "maa no.avadhiiH ( f)\npitaraM mota maataraM priyaa maa nastanuvo rudra riirishhaH", "mng": "O Rudra ! Do not ( maa ) afflict ( vadhiiH ) our fathers ( pitaraM) and our mothers ( maataraM) O Rudra ! Protect the bodies of people dear ( priyaa ) to us."}, {"skt": "maa nastoke tanaye maa na aayushhi\nmaa no goshhu maa no ashveshhu riirishhaH", "mng": "O Rudra ! Protect our children ( toke),descendants ( tanaye ) and our life ( aayushhi) O Rudra ! Protect our knowledge ( goshhu- cows ) and our life energies ( ashveshhu-horses )."}, {"skt": "viiraan-maa no rudra\nbhaamito.avadhiir-havishh-manto\nnamasa vidhema te\naaraatte goghna uta puurushhaghne\nkshayadviiraaya sumnamasme te astu", "mng": "O Rudra ! Being  angered ( bhaamito) at our lapses,do not hurt us and our warriors ( viiraan).We shall serve and worship and salute ( namasaa) You with these offerings ( havishhmanto) into the sacred fire. O Rudra ! May the terrible form of Yours that destroys enemy warriors ( kshaya-dviiraaya) be far away ( aaratte) from our cattle ( goghna) and our people ( puurushhaghne)"}, {"skt": "rakshaa cha no adhi cha deva bruuhyadhaa cha naH sharma yachchaa dvi-barhaaH", "mng": "May ( astu ) that form of Yours which confers happiness ( sumnamasme) be near us. O Rudra ! Protect ( rakshaa) us and bless ( bruuhyadhaa-declare) us with happiness ( sharma ) of both ( dvi-two ) the worlds."}, {"skt": "stuhi shrutaM gartasadaM yuvaanaM mR^iganna\nbhiima-mupahatnu-mugram", "mng": "O Man ! Praise ( stuhi) the famous ( shrutaM) One Who is seated in the hollow of the heart ( gartasadaM);Who is ever youthful (yuvaanaM);Who is terrible like a lion ( mR^iganna bhiima),fierce ( ugram) and Who destroys ( upahatnum)."}, {"skt": "mR^iDaa jaritre rudra stavaano\nanyante asman-nivapantu senaaH\npariNo rudrasya hetir-vR^iNaktu", "mng": "O Rudra ! We are in these bodies that decay ( jaritre ) everyday.Praised by us ( stavaano),may You grant us happiness ( mR^iDaa). May your armies ( senaaH) strike ( nivapantu) at others ( anyante);not us.Let that weapon of Yours ( rudrasya hetir ) spare us (pari vR^iNaktu)."}, {"skt": "pari tveshhasya durmati raghaayoH\nava sthiraa maghavadbhyas-tanushhva\nmiiDhvas-tokaaya tanayaaya mR^iDaya", "mng": "May your blazing anger ( durmatir) at our sins and the resultant keenness to punish us ( aghaayoH) depart from us.O Rudra ! Please withdraw ( tanushhva) the intention ( sthiraa) to punish us.We have offered You our sacrifices ( maghavadbhyas ) and prayers. You are a bestower of blessings ( miiDhvas).Please make our sons ( tokaaya) and descendants ( tanayaaya ) happy ( mR^iDaya)"}, {"skt": "miiDhushhTama shivatama shivo naH sumanaa bhava\nparame vR^iksha aayudhan-nidhaaya\nkR^ittiM vasaana aachara\npinaaKam bibhrad-aagahi\nvikirda vilohita namaste astu bhagavah", "mng": "O Rudra ! You are the Supreme bestower of blessings ( miiDhushhTam).You are supremely auspicious ( shivatama).Be ( bhava) auspicious ( shivo) and bear goodwill( sumanaa) to us . O Rudra ! Place your threatening and hurtful ( weapons ) aayudhan-nidhaaya) on some tall and distant tree ( parame-vR^iksha).Approach (aachara) us wearing your elephant-hide garment ( kR^ittiM vasaana).Come ( aagahi) bearing your Pinaka bow ( pinaakaM bibhrad). O Rudra ! You shower us with wealth ( vikirda). I namaha( namaste) to that Lord (bhagavaH) who is not red ( vilohita) in colour , viz.,in colour."}, {"skt": "yaaste sahasra(gm)\nhetayonya-masman-nivapantu taaH\nsahasraaNi sahasradhaa baahuvostava hetayaH", "mng": "O Rudra ! May Your thousands ( sahasra(gm)) of weapons ( hetay ) destroy ( nivapantu) others (yonyam);not us. O Rudra ! In Your arms ( baahuvostava) exist thousands ( sahasradhaa)of kinds of weapons ( hetayaH) in thousands of numbers ( sahasraaNi)"}, {"skt": "taasaam-iishaao bhagavaH (f) paraachiinaa\nmukhaa kR^idhi", "mng": "O Lord ( bhagavaH) ! You are their master and Lord ( taasaam-iishaano).Please turn these weapons' ( kR^idhi) faces (mukhaa)away ( paraachiinaa) from us."}]}, {"num": 11, "title": "Anuvaka 11", "subtitle": "The Universal Rudras & Maha Mritunjaya", "verses": [{"skt": "sahasraaNi sahasrasho ye rudraa adhi bhuumyaam\nteshhaa(gm) sahasra-yojane.ava-dhanvaani tanmasi", "mng": "We shall loosen ( tanmasi) the bow-strings of all these Rudras and deposit their bows ( dhanvaani) , thousands ( sahasra) of leagues ( yojane-a unit of measuring distance),away from us."}, {"skt": "asmin-mahatyarNave.antarikshe bhavaa adhi", "mng": "There are Rudras who dwell in the sublime ocean ( mahatyarNave) and the space between sky and earth ( antarikshe)."}, {"skt": "niila-griivaH shiti-kaNThaaH\nsharvaa adhaH,kshamaa-charaaH", "mng": "There are Rudras Who are blue-necked ( niilagriivaaH), have blue throats (shitikaNThaaH ) and wander ( aacharaaH) in the nether regions ( kshama)"}, {"skt": "niilagriivaah shitikaNThaa\ndiva(gm) rudraa upa-shritaaH", "mng": "There are Rudras who are blue necked ( niilagriivaH), have blue throats (shitikaNThaaH) and dwell ( shritaaH) in the heaven ( diva(gm))"}, {"skt": "ye vR^iksheshhu saspiJNjaraa\nniila-griivaa vilohitaaH\nye bhuutaanaam-adhipatayo", "mng": "There are Rudras who live on trees ( vR^iksheshhu) and are blue-necked. There are Rudras who have the colour of tender grass ( saspiJNjaraa) and those who are ( vilohitaaH-not red ) in colour.. There are Rudras who are Lord ( adipatayo) of all beings (bhuutaanaam)."}, {"skt": "vishikhaasaH kapardinaH", "mng": "Some of these Rudras are bald ( vishikhaasaH) and some have matted hair ( kapardinaH)"}, {"skt": "ye anneshhu vivdhyanti paatreshhu\npibato janaan", "mng": "There are Rudras who are in different varieties ( vividhyanti) of food ( anneshhu), vessels  ( paatreshhu) and in the drinks ( pibato) that people ( janaan) consume."}, {"skt": "ye pathaaM pathirakshaya ailabR^idaa yavyudhaH", "mng": "There are Rudras who are the Lord and protector ( pathirakshaya) of the pathways ( pathaaM). There are Rudras who distribute food ( ailabR^idaa ) and who are warriors ( yavyudhaH)."}, {"skt": "pracharanti sR^ikaavanto nishha-NgiNah\nya etaa-vantash-cha\nbhuuyaa(gm)sash-cha disho\nrudraa vitasthire", "mng": "There are Rudras who roam ( pracharanti) in holy places ( tiirthaani) with spears ( sR^ikaavanto) and quivers ( nishha-NgiNah) There are Rudras who have been mentioned so far ( etaa-vantash). Over and above them,there are those who occupy ( vitasthire ) the directions ( disho)."}, {"skt": "teshhaa(gm) sahasra-yojane.ava-dhanvaani tanmasi", "mng": "We shall loosen ( tanmasi) the bow-strings of all these Rudras and deposit their bows ( dhanvaani),thousands ( sahasra) of leagues(yojane-a unit of measuring distance),away from us."}, {"skt": "namo rudrebhyo ye pR^ithivyaaM\nye.antarikshe ye divi\nyeshaam-annaM vaato\nvarshham-ishhavas-tebhyo dasha", "mng": "My namaha( namo) to those Rudras ( rudrebhyo) who dwell on the earth (pR^ithivyaaM),in the atmosphere ( antarikshe) and in the sky ( divi). Food ( annam) , wind ( vaato) and rain (varshham) are the arrows (ishhavas) of these Rudras."}, {"skt": "praachiir-dasha dakshiNaa dasha\npratiichiir-dasho-diichiir\ndashordhvaas-tebhyo namaste no", "mng": "With the ten ( dasha) fingers joined,I bow to them (the Rudras ) facing the east ( paachiir),the south (dakshiNaa),the west ( pratiichiir),the north ( udiichiir) and upwards ( uurdhvaas)."}, {"skt": "namaha to them.\nmR^iDayantu te yaM dvishhmo\nyash-cha no dveshhTi taM vo\njambhe dadhaami", "mng": "May they make us happy ( mR^iDayantu).They whom we hate ( dvishhmo) and they who hate us ( dveshhTi),I consign ( dadhaam-give) them into the yawning mouths ( jambhe ) of the Rudras ( Note;What is consigned is the hate and not the person) *The Rudra Prashna ends here in the samhita. The mantras that come after this are from various parts of the Yajur and R^ig Veda*"}, {"skt": "tryambakaM yajaamahe sugandhiM\npushhTivardhanam\nurvaarukamiva bandhanaan\nmR^ityor mukshiiya maa.amR^itaat", "mng": "O Omniscient Divinity! We adore You.O Lord! Full of excellent fragrance,You are the nourisher and the sustainer of all life.As the cucumber is freed from the stem when it is riple,so too liberate us from both death and fear of death.Grant us nectar of immortality."}, {"skt": "tryambakaM : One with 3 eyes.The third eye is the eye of omniscience and infinite knowleddge.\nyajaamahe  We meditate, we adore and we revere as a yaaga ( sacrifice )\nsugandhiM : full of precious fragrance - the fragrance of unlimited Love\npushhTi-vardhanam : Who nourishes and sustains all life-forms at all levels.\nurvaarukam-iva bandhanaan : Just as a ripe cucumber drops off the plant, effortlessly, so too, may I be freed of my bondages when I am ready.\nmR^ityor-mukshiiya : O Lord ! Deliver me from physical death and death in the form of ignorance and lack of devotion and love.", "mng": "(Note : most fruits drop off the plant when they are ripe,i.e.,the fruit makes the effort to be free.In the case of cucumber,the plant releases its hold on the cucumber when it is ripe )"}, {"skt": "yo rudro agnau yo apsu ya oshhadhiishhu\nyo rudro vishvaa bhuvanaa vivesha\ntasmai rudraaya namo astu", "mng": "My namaha ( namo) to that Rudra who has entered into and pervaded fire (agnau),the waters ( apsu), herbs( oshhadhiishhu) and all the worlds (visvhaa bhuvanaa)."}, {"skt": "tamu shhTuhi yaH svishhuH sudhanvaa\nyo vishvasya kshayati bheshhajasya\nlet us praise Him who has the auspicious arrow ( svishhuH ) and bow ( sudhanvaa).", "mng": "He is the source and repository of all medicines ( bheshhajasya) in this world ( vishvasya)."}, {"skt": "yakshhvaamahe saumanasaaya rudraM\nnamobhir-devam-asuraM duvasyaa", "mng": "Let us worship Him ( yakshhvaamahe) for good thinking and understanding( saumanasaaya ) Let us adore and honour that effulgent Rudra with our namaha ( namobhir duvasya)."}, {"skt": "ayaM me hasto bhagavaan-ayaM me bhagavattaraH\nayaM me vishva-bheshhajo-ayam\nshivaa-bhimarshanaH", "mng": "This right hand of mine (ayaM me hasto) is fortunate ( bhagavaan),due to its contact with the deity / Liṅga ( shivaa-bhimarshanaH) In fact,it is more fortunate ( bhagavattaraH) than the other hand. Indeed this hand of mine is a panacea ( bheshhajo) for all human ills."}, {"skt": "ye te sahasram-ayutaM paashaa\nmR^ityo martyaaya hantave\ntaan yaGYasya maayayaa sarvaanava yajaamahe", "mng": "O Death (mR^ityo ) in the form of Rudras ! You have countless ( sahasram-thousand,ayutaM-ten thousand) nooses ( paashaa) to destroy mortal creatures ( martyaaya hantave ). I worship You with these subtle ( maayayaa) sacrifices ( yaGYasya) and offerings for complete protection ( sarvaanava)"}, {"skt": "mR^ityave svaahaa", "mng": "Hail to Death ! Hail to Death !"}, {"skt": "svaahaa-is a sacred call to the deities.It means - I offer wholeheartedly wthout any reservations.Another interpretation is 'So be it'.", "mng": "Om namo bhagavate rudraaya"}, {"skt": "vishhNave mR^ityurme paahi\nnamaha to Rudra and Vishnu", "mng": "May they help me across ( paahi) death ( mR^ityurme)."}, {"skt": "praaNaanaam granthirasi rudro maa vishaantakaH\ntenaan-nenaapyaayasva\nnamo rudraaya vishhNave mR^ityurme paahi", "mng": "Om shaantiH shaantiH shaantiH O Rudra ! You remove ( vishaantakaH -end) the blockages ( granthirasi-knots) in the flow of the life-breath ( praaNaanaaM) ;viz.,You remove all obstacles in life and death. Be pleased with my offerings and cast your benevolent and auspicious sight on me."}, {"skt": "namaha to Rudra and Vishhnnu. May they help me across ( paahi) death (mR^ityurme).", "mng": "Peace ,Peace, Peace - Peace to body,mind and soul. Source : Adapted from Vedic Chants, The Journey Within By Ms.Lalitha Vaithilingam, Ms.Nirmala Sekhar and others. Also Read : (1) Importance and Benefits of Shri Rudram (2) Origin of Vedas (3) All my articles on Vedas (4) Shri Rudram and The Cosmic Dance <div class=\""}]}];
+
+
+// ── State ────────────────────────────────────────────────────────────────────
+const PARK_KEY = 'rudram_namakam_park';
+let currentAnu = null;
+let currentVerse = null;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function h(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function getParked() { try { return JSON.parse(localStorage.getItem(PARK_KEY)||'null'); } catch(e){return null;} }
+
+// ── Build group nav (Anuvaka buttons) ────────────────────────────────────────
+function buildGroupNav() {
+  const gnav = document.getElementById('gnav');
+  DATA.forEach(anu => {
+    const btn = document.createElement('button');
+    btn.className = 'gb';
+    btn.id = 'gb_' + anu.num;
+    btn.textContent = 'Anuvaka ' + anu.num;
+    btn.onclick = () => selectAnuvaka(anu.num, null);
+    gnav.appendChild(btn);
+  });
+}
+
+// ── Select anuvaka: show bubble nav + first verse ─────────────────────────────
+function selectAnuvaka(anuNum, forceVerse) {
+  // Update group buttons
+  document.querySelectorAll('.gb').forEach(b => b.classList.remove('active'));
+  const gb = document.getElementById('gb_' + anuNum);
+  if (gb) gb.classList.add('active');
+
+  currentAnu = anuNum;
+
+  // Build verse bubbles for this anuvaka
+  buildVerseBubbles(anuNum);
+
+  // Show/hide anuvaka intro card
+  document.querySelectorAll('.anu-intro-card').forEach(c => c.style.display = 'none');
+  const intro = document.getElementById('ai_' + anuNum);
+  if (intro) intro.style.display = 'block';
+
+  // Show requested verse (or first)
+  const anu = DATA.find(d => d.num === anuNum);
+  if (anu && anu.verses.length > 0) {
+    const targetVerse = forceVerse !== null ? forceVerse : 1;
+    showVerse(anuNum, targetVerse);
+  }
+
+  document.getElementById('mc').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('parkBar').style.display = 'flex';
+}
+
+// ── Build verse bubble row ────────────────────────────────────────────────────
+function buildVerseBubbles(anuNum) {
+  const wrap = document.getElementById('snavWrap');
+  const snav = document.getElementById('snav');
+  const lbl  = document.getElementById('snavLabel');
+
+  snav.innerHTML = '';
+  wrap.classList.add('show');
+
+  const anu = DATA.find(d => d.num === anuNum);
+  if (!anu) return;
+
+  lbl.textContent = 'Anuvaka ' + anuNum + ' — ' + anu.subtitle + ' — tap a verse to open';
+
+  const parked = getParked();
+
+  anu.verses.forEach((v, vi) => {
+    const vNum = vi + 1;
+    const isParked = parked && parked.anu === anuNum && parked.verse === vNum;
+
+    const btn = document.createElement('button');
+    btn.className = 'sbb' + (isParked ? ' parked' : '');
+    btn.id = 'sbb_' + anuNum + '_' + vNum;
+    btn.textContent = vNum;
+    btn.title = 'Verse ' + vNum;
+    btn.onclick = () => showVerse(anuNum, vNum);
+    snav.appendChild(btn);
+  });
+}
+
+// ── Show a single verse card ──────────────────────────────────────────────────
+function showVerse(anuNum, vNum) {
+  // Hide all cards
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('vis'));
+
+  // Show target card
+  const card = document.getElementById('vc_' + anuNum + '_' + vNum);
+  if (card) card.classList.add('vis');
+
+  // Update bubble active state
+  document.querySelectorAll('.sbb').forEach(b => b.classList.remove('active'));
+  const sbb = document.getElementById('sbb_' + anuNum + '_' + vNum);
+  if (sbb) sbb.classList.add('active');
+
+  currentVerse = vNum;
+
+  // Scroll to card
+  const mc = document.getElementById('mc');
+  if (mc) mc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Toggle meaning box ────────────────────────────────────────────────────────
+function toggleMeaning(anuNum, vNum) {
+  const btn = document.getElementById('mb_' + anuNum + '_' + vNum);
+  const box = document.getElementById('mx_' + anuNum + '_' + vNum);
+  if (!btn || !box) return;
+  const open = box.classList.contains('open');
+  box.classList.toggle('open', !open);
+  btn.classList.toggle('open', !open);
+  const label = btn.querySelector('.lbl');
+  if (label) label.textContent = open ? 'Show Meaning' : 'Hide Meaning';
+}
+
+// ── Build all cards ───────────────────────────────────────────────────────────
+function buildCards() {
+  const mc = document.getElementById('mc');
+  const parked = getParked();
+
+  DATA.forEach(anu => {
+    // Anuvaka intro card (always hidden, shown when anuvaka selected)
+    const intro = document.createElement('div');
+    intro.className = 'anu-intro-card';
+    intro.id = 'ai_' + anu.num;
+    intro.style.display = 'none';
+    intro.innerHTML = `
+      <div class="anu-intro">
+        <div class="anu-tag">Anuvaka ${anu.num} of 11</div>
+        <div class="anu-title">${h(anu.title)}</div>
+        <div class="anu-sub">${h(anu.subtitle)}</div>
+      </div>`;
+    mc.appendChild(intro);
+
+    // Verse cards
+    anu.verses.forEach((verse, vi) => {
+      const vNum = vi + 1;
+      const cardId = 'vc_' + anu.num + '_' + vNum;
+      const isParked = parked && parked.anu === anu.num && parked.verse === vNum;
+
+      const card = document.createElement('div');
+      card.className = 'card' + (isParked ? ' parked-card' : '');
+      card.id = cardId;
+
+      const sktHtml = verse.skt ? `
+        <div class="skt-box">
+          <div class="skt-text">${h(verse.skt)}</div>
+        </div>` : '';
+
+      const mngHtml = verse.mng ? `
+        <button class="mng-btn" id="mb_${anu.num}_${vNum}" onclick="toggleMeaning(${anu.num},${vNum})">
+          <span class="lbl">Show Meaning</span> <span class="arr">▼</span>
+        </button>
+        <div class="mng-box" id="mx_${anu.num}_${vNum}">
+          <div class="mng-text">${h(verse.mng)}</div>
+        </div>` : '';
+
+      card.innerHTML = `
+        <div class="card-head">
+          <div class="card-num">Anuvaka ${anu.num} • Verse ${vNum}</div>
+          <div class="card-title">${h(anu.subtitle)}</div>
+          <button class="park-btn${isParked ? ' parked' : ''}" id="pb_${anu.num}_${vNum}"
+            onclick="parkVerse(${anu.num},${vNum})">
+            ${isParked ? '🔖 Bookmarked' : '📍 Bookmark'}
+          </button>
+        </div>
+        <div class="card-body">
+          ${sktHtml}
+          ${mngHtml}
+        </div>`;
+
+      mc.appendChild(card);
+    });
+  });
+}
+
+// ── Park / Bookmark ───────────────────────────────────────────────────────────
+function parkVerse(anuNum, vNum) {
+  const park = { anu: anuNum, verse: vNum, ts: new Date().toLocaleString() };
+  localStorage.setItem(PARK_KEY, JSON.stringify(park));
+  updateParkUI(park);
+
+  // Update button on card
+  document.querySelectorAll('.park-btn').forEach(b => {
+    b.classList.remove('parked');
+    b.textContent = '📍 Bookmark';
+  });
+  const pb = document.getElementById('pb_' + anuNum + '_' + vNum);
+  if (pb) { pb.classList.add('parked'); pb.textContent = '🔖 Bookmarked'; }
+
+  // Update bubble
+  document.querySelectorAll('.sbb').forEach(b => b.classList.remove('parked'));
+  const sbb = document.getElementById('sbb_' + anuNum + '_' + vNum);
+  if (sbb) sbb.classList.add('parked');
+}
+
+function savePark() {
+  if (currentAnu && currentVerse) parkVerse(currentAnu, currentVerse);
+}
+
+function clearPark() {
+  localStorage.removeItem(PARK_KEY);
+  document.getElementById('parkLabel').textContent = '📍 No bookmark saved';
+  document.querySelectorAll('.park-btn').forEach(b => { b.classList.remove('parked'); b.textContent = '📍 Bookmark'; });
+  document.querySelectorAll('.sbb').forEach(b => b.classList.remove('parked'));
+}
+
+function loadPark() {
+  const p = getParked();
+  if (p) updateParkUI(p);
+}
+
+function updateParkUI(p) {
+  document.getElementById('parkLabel').textContent =
+    `📍 Bookmarked: Anuvaka ${p.anu} • Verse ${p.verse}  (${p.ts})`;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildGroupNav();
+buildCards();
+loadPark();
+selectAnuvaka(1, 1);
+</script>
+<div style="position:fixed;bottom:14px;right:14px;z-index:300;"><a href="index.html" style="display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#8B1A1A,#C0392B);color:#fff;text-decoration:none;padding:8px 15px;border-radius:20px;font-family:Georgia,serif;font-size:.78rem;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.28);letter-spacing:.5px;transition:all .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">🏠 Home</a></div>
+</body>
+</html>

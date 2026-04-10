@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sri Rudram — Chamakam</title>
+<style>
+:root {
+  --saffron:#e87c1e; --deep:#8B1A1A; --red:#C0392B;
+  --gold:#c8931a;    --gold-lt:#f0c060; --gold-pale:#fdf3dc;
+  --dark:#2b0a00;    --mid:#5a2200;     --card:#fffdf8;
+  --bg:#fff8f0;      --border:#e8d5a0;
+  --park:#1a7a3a;    --park-lt:#e8f7ee; --park-bd:#2ecc71;
+  --blue:#2e6da4;    --blue-lt:#eaf3ff;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Georgia',serif; background:var(--bg); color:var(--dark); min-height:100vh; padding-bottom:60px; }
+
+/* ── Header ─────────────────────────────────────────────── */
+.header {
+  background:linear-gradient(135deg,var(--deep) 0%,var(--red) 55%,var(--gold) 100%);
+  color:#fff; text-align:center; padding:22px 16px 16px;
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 3px 14px rgba(0,0,0,.35);
+}
+.header-om  { font-size:2rem; display:block; margin-bottom:2px; }
+.header h1  { font-size:clamp(1.3rem,4vw,2rem); font-weight:700; letter-spacing:1px; text-shadow:0 2px 4px rgba(0,0,0,.4); }
+.header h2  { font-size:clamp(.8rem,2.2vw,1.05rem); opacity:.88; margin-top:3px; font-weight:400; }
+
+/* ── Anuvaka (group) nav ─────────────────────────────────── */
+.gnav-section { background:#fff; border-bottom:2px solid var(--border); padding:10px 12px;
+  position:sticky; top:82px; z-index:99; box-shadow:0 2px 6px rgba(0,0,0,.07); }
+.gnav-label { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--gold); font-weight:700; margin-bottom:7px; text-align:center; }
+.gnav { display:flex; justify-content:center; gap:6px; flex-wrap:wrap; }
+.gb {
+  padding:6px 13px; border-radius:20px; border:2px solid var(--gold);
+  background:var(--card); color:var(--gold); font-size:.8rem; font-weight:700;
+  cursor:pointer; transition:all .2s; white-space:nowrap;
+}
+.gb:hover   { border-color:var(--saffron); color:var(--saffron); }
+.gb.active  { background:linear-gradient(135deg,var(--deep),var(--red)); color:#fff; border-color:var(--red); box-shadow:0 3px 10px rgba(192,57,43,.4); }
+
+/* ── Verse bubble nav ────────────────────────────────────── */
+.snav-wrap  { background:rgba(200,147,26,.07); border:1px solid #e8d090; border-radius:12px;
+  padding:11px 14px; margin:12px 16px 0; display:none; max-width:820px; margin-left:auto; margin-right:auto; }
+.snav-wrap.show { display:block; }
+.snav-label { font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--gold); font-weight:700; margin-bottom:8px; }
+.snav       { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
+.sbb {
+  width:38px; height:38px; border-radius:50%; border:2px solid var(--gold);
+  background:var(--card); color:var(--gold); font-size:.82rem; font-weight:700;
+  cursor:pointer; transition:all .18s; display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.sbb:hover  { border-color:var(--saffron); color:var(--saffron); transform:translateY(-2px); }
+.sbb.active { background:linear-gradient(135deg,var(--deep),var(--red)); color:#fff; border-color:var(--red);
+  box-shadow:0 4px 12px rgba(192,57,43,.45); transform:scale(1.12); }
+.sbb.parked { border-color:var(--park) !important; box-shadow:0 0 0 3px rgba(26,122,58,.28) !important; }
+.sbb.parked::after { content:"🔖"; font-size:9px; position:absolute; top:-5px; right:-5px;
+  background:var(--park); border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; }
+
+/* ── Main area ───────────────────────────────────────────── */
+#mc { max-width:820px; margin:18px auto 0; padding:0 16px; }
+
+/* ── Verse Card ──────────────────────────────────────────── */
+.card { background:var(--card); border:1.5px solid var(--border); border-radius:16px;
+  margin-bottom:22px; box-shadow:0 4px 20px rgba(0,0,0,.08); display:none; overflow:hidden; }
+.card.vis { display:block; }
+.card.parked-card { border-color:var(--park-bd); box-shadow:0 4px 20px rgba(26,122,58,.18); }
+
+/* Card header */
+.card-head {
+  background:linear-gradient(90deg,rgba(192,57,43,.9),rgba(200,147,26,.85));
+  padding:11px 16px; display:flex; align-items:center; gap:10px;
+}
+.card-num  { background:rgba(255,255,255,.25); color:#fff; font-size:.75rem; font-weight:800;
+  padding:3px 9px; border-radius:10px; letter-spacing:.5px; }
+.card-title { color:#fff; font-size:.92rem; font-weight:700; flex:1; }
+.park-btn  { margin-left:auto; display:flex; align-items:center; gap:5px;
+  background:rgba(255,255,255,.18); border:1.5px solid rgba(255,255,255,.5);
+  border-radius:14px; padding:4px 11px; color:#fff; font-size:.75rem; font-weight:700;
+  cursor:pointer; transition:all .2s; }
+.park-btn:hover  { background:rgba(255,255,255,.32); }
+.park-btn.parked { background:var(--park); border-color:var(--park-bd); }
+
+/* Card body */
+.card-body { padding:16px; }
+
+/* Sanskrit box */
+.skt-box {
+  background:linear-gradient(135deg,#fffaf0,#fff3e0);
+  border:1px solid #e8c870; border-left:4px solid var(--gold);
+  border-radius:8px; padding:14px 16px; margin-bottom:14px;
+}
+.skt-box::before {
+  content:'🕉  Transliteration (IAST)';
+  display:block; font-size:.7rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  color:var(--gold); margin-bottom:8px;
+}
+.skt-text { font-family:'Courier New',monospace; font-size:.9rem; line-height:1.75; color:#3a1a00; white-space:pre-wrap; }
+
+/* Meaning toggle button */
+.mng-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  background:none; border:2px solid var(--saffron); border-radius:18px;
+  padding:5px 14px; font-size:.8rem; font-weight:700; color:var(--saffron);
+  cursor:pointer; transition:all .2s; margin-bottom:10px;
+}
+.mng-btn:hover { background:var(--saffron); color:#fff; }
+.mng-btn.open  { background:var(--saffron); color:#fff; }
+.mng-btn .arr  { transition:transform .2s; font-size:.75rem; }
+.mng-btn.open .arr { transform:rotate(180deg); }
+
+/* Meaning box */
+.mng-box {
+  display:none; background:var(--blue-lt);
+  border:1px solid #b8d4f0; border-left:4px solid var(--blue);
+  border-radius:8px; padding:14px 16px;
+}
+.mng-box.open { display:block; }
+.mng-box::before {
+  content:'📖  Meaning & Commentary';
+  display:block; font-size:.7rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  color:var(--blue); margin-bottom:8px;
+}
+.mng-text { font-size:.88rem; line-height:1.72; color:#1a3a5c; }
+
+/* Anuvaka intro card */
+.anu-intro {
+  background:linear-gradient(135deg,rgba(139,26,26,.08),rgba(200,147,26,.1));
+  border:1px solid var(--border); border-radius:12px;
+  padding:16px 18px; margin-bottom:18px; text-align:center;
+}
+.anu-intro .anu-tag   { font-size:.75rem; font-weight:800; text-transform:uppercase; letter-spacing:2px; color:var(--saffron); }
+.anu-intro .anu-title { font-size:1.25rem; font-weight:700; color:var(--red); margin:4px 0; }
+.anu-intro .anu-sub   { font-size:.88rem; color:var(--mid); font-style:italic; }
+.anu-intro .anu-summary { font-size:.83rem; color:#444; line-height:1.6; margin-top:10px;
+  background:rgba(255,255,255,.6); border-radius:8px; padding:10px 14px; text-align:left; }
+
+/* ── Park bar ────────────────────────────────────────────── */
+.park-bar {
+  position:fixed; bottom:0; left:0; right:0; display:none;
+  background:linear-gradient(90deg,var(--deep),var(--red));
+  color:#fff; padding:9px 14px; z-index:200;
+  box-shadow:0 -2px 10px rgba(0,0,0,.22);
+  align-items:center; gap:10px; flex-wrap:wrap;
+}
+.park-bar span { font-size:.8rem; flex:1; min-width:80px; }
+.park-save  { background:var(--gold); color:var(--dark); border:none; border-radius:14px;
+  padding:5px 13px; font-size:.77rem; font-weight:800; cursor:pointer; transition:all .2s; white-space:nowrap; }
+.park-save:hover { background:var(--gold-lt); }
+.park-clear { background:rgba(255,255,255,.18); color:#fff; border:1px solid rgba(255,255,255,.3);
+  border-radius:14px; padding:5px 10px; font-size:.72rem; cursor:pointer; }
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--saffron); border-radius:3px; }
+
+@media(max-width:600px) {
+  .gnav-section { top:78px; }
+  .gb { font-size:.72rem; padding:5px 9px; }
+  .sbb { width:33px; height:33px; font-size:.75rem; }
+  .header h1 { font-size:1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-om">ॐ</span>
+  <h1>Sri Rudram — Chamakam</h1>
+  <h2>Taittirīya Saṃhitā • Kṛṣṇa Yajur Veda • 11 Anuvakas • Cha Me Prayer</h2>
+</div>
+
+<!-- Anuvaka (group) navigation -->
+<div class="gnav-section">
+  <div class="gnav-label">Select Anuvaka</div>
+  <div class="gnav" id="gnav"></div>
+</div>
+
+<!-- Verse bubble navigation -->
+<div class="snav-wrap" id="snavWrap">
+  <div class="snav-label" id="snavLabel">Verses — tap a number to open</div>
+  <div class="snav" id="snav"></div>
+</div>
+
+<!-- Main cards area -->
+<div id="mc"></div>
+
+<!-- Park bar -->
+<div class="park-bar" id="parkBar">
+  <span id="parkLabel">📍 No bookmark saved</span>
+  <button class="park-save" onclick="savePark()">🔖 Bookmark Here</button>
+  <button class="park-clear" onclick="clearPark()">✕ Clear</button>
+</div>
+
+<script>
+// ── DATA ──
+const DATA = [
+  {
+    "num": 1,
+    "title": "First Anuvaka",
+    "subtitle": "Prāṇa & Vitality",
+    "summary": "The first Anuvaka of the Chamakam asks for a variety of blessings, including strength, longevity, vitality, knowledge, skill, protection, and good health, both physically and spiritually. It’s a holistic invocation to Agni and Vishnu, asking for well-being in all aspects of life.",
+    "verses": [
+      {
+        "skt": "camakapraśnaḥ\nōṃ agnā̍viṣṇō sa̠jōṣa̍sē̠māva̍rdhantu vā̠-ṅgira̍ḥ ।\ndyu̠mnairvājē̍bhi̠rāga̍tam ।\nvāja̍ścha mē prasa̠vaścha̍ mē̠",
+        "mng": "oṃ agnāviṣṇū sajoṣasemā vardhantu vāṃ giraḥ: May the hymns of praise for Agni and Vishnu, offered together in harmony, increase and grow.\ndyumnairvājebhirāgatam: May you (Agni and Vishnu) arrive with radiant splendor and blessings of wealth and strength.\ndyumnair: With brilliance or splendor.\nvājebhiḥ: With wealth or blessings (often referring to strength, energy, or sustenance).\nāgatam: Arrive or come.\n\nvājaśca me prasavaśca me: May I have both strength and progeny.\nvājaḥ: Strength or energy (also wealth).\nprasavaḥ: Progeny, offspring, or productivity.\nme: Refers to for me (as in, let these qualities be mine).\n\nprayatiśca me prasitiśca me: May I have determination and accomplishment.\nprayatiḥ: Determination or perseverance.\nprasitiḥ: Success or accomplishment.\n\ndhītiśca me kratuśca me: May I have both wisdom and willpower.\ndhītiḥ: Wisdom or intelligence.\nkratuḥ: Willpower or resolve."
+      },
+      {
+        "skt": "praya̍tiścha mē̠ prasi̍tiścha mē\ndhī̠tiścha̍ mē kratu̍ścha mē̠\nsvara̍ścha mē̠ ślōka̍ścha mē\nśrā̠vaścha̍ mē̠ śruti̍ścha mē̠",
+        "mng": "svaraśca me ślokaśca me: May I have musical expression and fame.\nsvaraḥ: Sound or tone, often referring to vocal expression or music.\nślokaḥ: Fame, renown, or verses (hymns).\n\nśrāvaśca me śrutiśca me: May I have good reputation and understanding of sacred knowledge.\nśrāvaḥ: Reputation, fame, or hearing.\nśrutiḥ: Sacred knowledge or scripture (that which is heard, particularly the Vedas).\n\njyotiśca me suvaśca me: May I have light and heaven.\njyotiḥ: Light or illumination.\nsuvaḥ: Heaven or celestial realms.\n\nprāṇaśca me’pānaśca me: May my vital life forces (breath) be strong, both outgoing and incoming.\nprāṇaḥ: Outgoing breath or life force.\napānaḥ: Incoming breath or life force."
+      },
+      {
+        "skt": "jyōti̍ścha mē̠ suva̍ścha mē\nprā̠ṇaścha̍ mē-'pā̠naścha̍ mē\nvyā̠naścha̠ mē-'su̍ścha mē\nchi̠tta-ñcha̍ ma̠ ādhī̍ta-ñcha mē̠",
+        "mng": "vyānaśca me’suśca me: May I have balanced energy flow and perfect health.\nvyānaḥ: A type of vital breath that governs circulation of energy within the body.\nasuḥ: Life or vitality.\n\ncittaṃ ca ma ādhītaṃ ca me: May I have a focused mind and retained knowledge.\ncittam: Mind or consciousness.\nādhītam: Retained or acquired knowledge.\n\nvākca me manaśca me: May I have the power of speech and control of the mind.\nvāk: Speech or voice.\nmanaḥ: Mind or thought.\n\ncakṣuśca me śrotraṃ ca me: May I have sharp vision and hearing.\ncakṣuḥ: Eyes or vision.\nśrotram: Ears or hearing."
+      },
+      {
+        "skt": "vākcha̍ mē̠ mana̍ścha mē̠\nchakṣu̍ścha mē̠ śrōtra̍-ñcha mē̠\ndakṣa̍ścha mē̠ bala̍-ñcha ma̠\nōja̍ścha mē̠ saha̍ścha ma̠",
+        "mng": "dakṣaśca me balaṃ ca ma ojaśca me sahaśca ma: May I have skill, strength, vitality, and endurance.\ndakṣaḥ: Skill or capability.\nbalaṃ: Strength.\nojaḥ: Vitality or vigor.\nsahaḥ: Endurance or power.\n\nāyuśca me jarā ca ma: May I have longevity and graceful aging.\nāyuḥ: Longevity or life.\njarā: Old age.\n\nātmā ca me tanūśca me: May my soul and body be strong.\nātmā: Soul or self.\ntanūḥ: Body."
+      },
+      {
+        "skt": "āyu̍ścha mē ja̠rā cha̍ ma\nā̠tmā cha̍ mē ta̠nūścha̍ mē̠\nśarma̍ cha mē̠ varma̍ cha̠ mē-'ṅgā̍ni cha mē̠-'sthāni̍ cha mē̠\nparūg̍ṃṣi cha mē̠ śarī̍rāṇi cha mē",
+        "mng": "śarma ca me varma ca me: May I have protection and a shield.\nśarma: Protection or happiness.\nvarma: Shield or armor.\n\naṅgāni ca me’sthāni ca me: May my limbs and bones be strong.\naṅgāni: Limbs or body parts.\nasthāni: Bones.\n\nparūgͫṣi ca me śarīrāṇi ca me: May my joints and body be in good health.\nparūgͫṣi: Joints or connections.\nśarīrāṇi: Body.\nजैष्ठ्य॑-ञ्च म॒ आधि॑पत्य-ञ्च मे\nम॒न्युश्च॑ मे॒ भाम॑श्च॒ मे-ऽम॑श्च॒ मे-ऽम्भ॑श्च मे\nजे॒मा च॑ मे महि॒मा च॑ मे\nवरि॒मा च॑ मे प्रथि॒मा च॑ मे\nव॒र्​ष्मा च॑ मे द्राघु॒या च॑ मे\nवृ॒द्ध-ञ्च॑ मे॒ वृद्धि॑श्च मे\nस॒त्य-ञ्च॑ मे श्र॒द्धा च॑ मे॒\nजग॑च्च मे॒ धन॑-ञ्च मे॒\nवश॑श्च मे॒ त्विषि॑श्च मे\nक्री॒डा च॑ मे॒ मोद॑श्च मे\nजा॒त-ञ्च॑ मे जनि॒ष्यमा॑ण-ञ्च मे\nसू॒क्त-ञ्च॑ मे सुकृ॒त-ञ्च॑ मे\nवि॒त्त-ञ्च॑ मे॒ वेद्य॑-ञ्च मे\nभू॒त-ञ्च॑ मे भवि॒ष्यच्च॑ मे\nसु॒ग-ञ्च॑ मे सु॒पथ॑-ञ्च म\nऋ॒द्ध-ञ्च॑ म ऋद्धि॑श्च मे\nकॢ॒प्त-ञ्च॑ मे॒ कॢप्ति॑श्च मे"
+      }
+    ]
+  },
+  {
+    "num": 2,
+    "title": "Second Anuvaka",
+    "subtitle": "Leadership & Wisdom",
+    "summary": "The Second Anuvaka of the Chamakam continues the invocation of blessings, focusing on qualities like leadership, brilliance, growth, truth, faith, prosperity, and wisdom. It asks for a harmonious combination of material success, mental clarity, spiritual growth, and righteous conduct, all vital for living a complete and fulfilled life. jyaiṣṭhyaṃ ca ma ādhipatyaṃ ca me: May I have supremacy and leadership.",
+    "verses": [
+      {
+        "skt": "jaiṣṭhya̍-ñcha ma̠ ādhi̍patya-ñcha mē\nma̠nyuścha̍ mē̠ bhāma̍ścha̠ mē-'ma̍ścha̠ mē-'mbha̍ścha mē\njē̠mā cha̍ mē mahi̠mā cha̍ mē\nvari̠mā cha̍ mē prathi̠mā cha̍ mē",
+        "mng": "jyaiṣṭhyaṃ: Supremacy, superiority, or being the best.\nādhipatyaṃ: Leadership or lordship.\n\nmanyuśca me bhāmaśca me: May I have righteous anger and brilliance.\nmanyuḥ: Righteous anger, or the ability to take determined action.\nbhāmaḥ: Brilliance or radiance (both physically and mentally).\n\n’maśca me’mbhaśca me: May I have wealth and abundance of water.\namaḥ: Wealth or resources.\nambhaḥ: Water or abundance, often referring to life's sustaining element.\n\njemā ca me mahimā ca me: May I have prosperity and greatness.\njemā: Prosperity, well-being, or excellence.\nmahimā: Greatness or magnificence."
+      },
+      {
+        "skt": "va̠r​ṣmā cha̍ mē drāghu̠yā cha̍ mē\nvṛ̠ddha-ñcha̍ mē̠ vṛddhi̍ścha mē\nsa̠tya-ñcha̍ mē śra̠ddhā cha̍ mē̠\njaga̍chcha mē̠ dhana̍-ñcha mē̠",
+        "mng": "varimā ca me prathimā ca me: May I have vastness and expansiveness.\nvarimā: Vastness or greatness in extent.\nprathimā: Expansiveness or extension in all directions.\n\nvarṣmā ca me drāghuyā ca me: May I have height and length.\nvarṣmā: Height or stature.\ndrāghuyā: Length or long life.\n\nvṛddhaṃ ca me vṛddhiśca me: May I have growth and increase.\nvṛddham: Growth or prosperity (refers to material or spiritual growth).\nvṛddhiḥ: Increase or improvement.\n\nsatyaṃ ca me śraddhā ca me: May I have truth and faith.\nsatyaḥ: Truth or righteousness.\nśraddhā: Faith or devotion."
+      },
+      {
+        "skt": "vaśa̍ścha mē̠ tviṣi̍ścha mē\nkrī̠ḍā cha̍ mē̠ mōda̍ścha mē\njā̠ta-ñcha̍ mē jani̠ṣyamā̍ṇa-ñcha mē\nsū̠kta-ñcha̍ mē sukṛ̠ta-ñcha̍ mē",
+        "mng": "jagacca me dhanaṃ ca me: May I have dominion over the world and wealth.\njagat: The world or universe.\ndhanam: Wealth or riches.\n\nvaśaśca me tviṣiśca me: May I have control and splendor.\nvaśaḥ: Control, authority, or influence.\ntviṣiḥ: Radiance or brilliance.\n\nkrīḍā ca me modaśca me: May I have joy and delight.\nkrīḍā: Playfulness or joy.\nmodaḥ: Delight or happiness.\n\njātaṃ ca me janiṣyamāṇaṃ ca me: May I have what is already born and what is yet to be born.\njātam: That which is already born or created.\njaniṣyamāṇaṃ: That which is yet to be born or created."
+      },
+      {
+        "skt": "vi̠tta-ñcha̍ mē̠ vēdya̍-ñcha mē\nbhū̠ta-ñcha̍ mē bhavi̠ṣyachcha̍ mē\nsu̠ga-ñcha̍ mē su̠patha̍-ñcha ma\nṛ̠ddha-ñcha̍ ma ṛddhi̍ścha mē",
+        "mng": "sūktaṃ ca me sukṛtaṃ ca me: May I have well-spoken words and virtuous deeds.\nsūktam: Well-spoken words or hymns.\nsukṛtam: Virtuous deeds or good actions.\n\nvittaṃ ca me vedyaṃ ca me: May I have wealth and knowledge.\nvittam: Wealth or possessions.\nvedyam: Knowledge or understanding (often refers to Vedic knowledge).\n\nbhūtaṃ ca me bhaviṣyacca me: May I have what exists and what is yet to come.\nbhūtam: That which exists, or the present.\nbhaviṣyam: That which is yet to come, or the future.\n\nsugaṃ ca me supathaṃ ca ma: May I have an easy path and a good path.\nsugam: Ease or comfort (may also refer to an easy journey or passage).\nsupatham: A good or righteous path."
+      },
+      {
+        "skt": "kL​i̠pta-ñcha̍ mē̠ kL​ipti̍ścha mē\nma̠tiścha̍ mē suma̠tiścha̍ mē",
+        "mng": "ṛddhaṃ ca ma ṛddhiśca me: May I have prosperity and accomplishment.\nṛddham: Prosperity, wealth, or success.\nṛddhiḥ: Accomplishment or growth.\n\nkḷptaṃ ca me kḷptiśca me: May I have completion and ability to plan.\nkḷptam: Completion or arrangement.\nkḷptiḥ: Ability to plan or preparation.\n\nmatiśca me sumatiśca me: May I have wisdom and good judgment.\nmatiḥ: Wisdom, intellect, or understanding.\nsumatiḥ: Good judgment, right understanding, or favorable disposition.\nश-ञ्च॑ मे॒ मय॑श्च मे\nप्रि॒य-ञ्च॑ मे-ऽनुका॒मश्च॑ मे॒ काम॑श्च मे\nसौमनस॒श्च॑ मे भ॒द्र-ञ्च॑ मे॒\nश्रेय॑श्च मे॒ वस्य॑श्च मे॒\nयश॑श्च मे॒ भग॑श्च मे॒ द्रवि॑ण-ञ्च मे\nय॒न्ता च॑ मे ध॒र्ता च॑ मे॒\nक्षेम॑श्च मे॒ धृति॑श्च मे॒\nविश्व॑-ञ्च मे॒ मह॑श्च मे\nसं॒​विँच्च॑ मे॒ ज्ञात्र॑-ञ्च मे॒\nसूश्च॑ मे प्र॒सूश्च॑ मे॒\nसीर॑-ञ्च मे ल॒यश्च॑ म\nऋ॒त-ञ्च॑ मे॒-ऽमृत॑-ञ्च मे-ऽय॒क्ष्म-ञ्च॒ मे-ऽना॑मयच्च मे\nजी॒वातु॑श्च मे दीर्घायु॒त्व-ञ्च॑ मे-ऽनमि॒त्र-ञ्च॒ मे-ऽभ॑य-ञ्च मे\nसु॒ग-ञ्च॑ मे॒ शय॑न-ञ्च मे"
+      }
+    ]
+  },
+  {
+    "num": 3,
+    "title": "Third Anuvaka",
+    "subtitle": "Peace & Prosperity",
+    "summary": "This section of the Chamakam focuses on a wide array of blessings, including peace, desires, wealth, health, protection, longevity, knowledge, and comfort. The invocations ask for an ideal state of physical, mental, and spiritual well-being, covering all aspects of life, from prosperity and knowledge to rest and fearlessness. śaṃ ca me mayaśca me: May I have peace and prosperity.",
+    "verses": [
+      {
+        "skt": "śa-ñcha̍ mē̠ maya̍ścha mē\npri̠ya-ñcha̍ mē-'nukā̠maścha̍ mē̠ kāma̍ścha mē\nsaumanasa̠ścha̍ mē bha̠dra-ñcha̍ mē̠",
+        "mng": "śam: Peace or well-being.\nmayaḥ: Prosperity or joy.\n\npriyaṃ ca me'nukāmaśca me: May I have that which is dear and that which fulfills my desires.\npriyam: That which is dear or loved.\nanukāmaḥ: Fulfillment of desires or wishes.\n\nkāmaśca me saumanasaśca me: May I have desires fulfilled and peace of mind.\nkāmaḥ: Desires or wishes.\nsaumanasaḥ: Peace of mind or good thoughts.\n\nbhadraṃ ca me śreyaśca me: May I have auspiciousness and excellence.\nbhadram: Auspiciousness or good fortune.\nśreyaḥ: Excellence, welfare, or prosperity."
+      },
+      {
+        "skt": "śrēya̍ścha mē̠ vasya̍ścha mē̠\nyaśa̍ścha mē̠ bhaga̍ścha mē̠ dravi̍ṇa-ñcha mē\nya̠ntā cha̍ mē dha̠rtā cha̍ mē̠",
+        "mng": "vasyaśca me yaśaśca me: May I have control and fame.\nvasyaḥ: Control or influence.\nyaśaḥ: Fame or renown.\n\nbhagaśca me draviṇaṃ ca me: May I have good fortune and wealth.\nbhagaḥ: Good fortune, prosperity.\ndraviṇam: Wealth or resources.\n\nyantā ca me dhartā ca me: May I have guidance and support.\nyantā: Guide or director.\ndhartā: Supporter or sustainer.\n\nkṣemaśca me dhṛtiśca me: May I have security and perseverance.\nkṣemaḥ: Security or safety.\ndhṛtiḥ: Perseverance, steadiness, or determination."
+      },
+      {
+        "skt": "kṣēma̍ścha mē̠ dhṛti̍ścha mē̠\nviśva̍-ñcha mē̠ maha̍ścha mē\nsa̠ṃvichcha̍ mē̠ jñātra̍-ñcha mē̠",
+        "mng": "viśvaṃ ca me mahaśca me: May I have the whole universe and greatness.\nviśvam: The whole universe or entirety.\nmahaḥ: Greatness or magnificence.\n\nsaṃvicca me jñātraṃ ca me: May I have understanding and knowledge.\nsaṃvit: Understanding, awareness, or consciousness.\njñātram: Knowledge or insight.\n\nsūśca me prasūśca me: May I have birth and productivity.\nsūḥ: Birth or creation.\nprasūḥ: Productivity or fruitfulness.\n\nsīraṃ ca me layaśca ma: May I have firmness and dissolution.\nsīram: Firmness or stability.\nlayaḥ: Dissolution or rest."
+      },
+      {
+        "skt": "sūścha̍ mē pra̠sūścha̍ mē̠\nsīra̍-ñcha mē la̠yaścha̍ ma\nṛ̠ta-ñcha̍ mē̠-'mṛta̍-ñcha mē-'ya̠kṣma-ñcha̠ mē-'nā̍mayachcha mē",
+        "mng": "ṛtaṃ ca me'mṛtaṃ ca me: May I have truth and immortality.\nṛtam: Truth or cosmic order.\namṛtam: Immortality or the nectar of immortality.\n\n'yakṣmaṃ ca me'nāmayacca me: May I be free from disease and affliction.\nyakṣmam: Disease or affliction.\nanāmayam: Health, freedom from disease.\n\njīvātuśca me dīrghāyutvaṃ ca me: May I have long life and vitality.\njīvātuḥ: Vitality or life.\ndīrghāyutvam: Long life or longevity."
+      },
+      {
+        "skt": "jī̠vātu̍ścha mē dīrghāyu̠tva-ñcha̍ mē-'nami̠tra-ñcha̠ mē-'bha̍ya-ñcha mē\nsu̠ga-ñcha̍ mē̠ śaya̍na-ñcha mē\nsū̠ṣā cha̍ mē su̠dina̍-ñcha mē",
+        "mng": "'namitraṃ ca me'bhayaṃ ca me: May I be free from enemies and fear.\nanamitram: Without enemies.\nabhayam: Fearlessness or safety.\n\nsugaṃ ca me śayanaṃ ca me: May I have comfort and restful sleep.\nsugam: Comfort or ease.\nśayanam: Sleep or a bed to rest.\n\nsūṣā ca me sudinaṃ ca me: May I have good mornings and auspicious days.\nsūṣā: Morning or dawn.\nsudinam: An auspicious or good day.\nऊर्क्च॑ मे सू॒नृता॑ च मे॒\nपय॑श्च मे॒ रस॑श्च मे\nघृ॒त-ञ्च॑ मे॒ मधु॑ च मे॒\nसग्धि॑श्च मे॒ सपी॑तिश्च मे\nकृ॒षिश्च॑ मे॒ वृष्टि॑श्च मे॒\nजैत्र॑-ञ्च म॒ औद्भि॑द्य-ञ्च मे\nर॒यिश्च॑ मे॒ राय॑श्च मे\nपु॒ष्ट-ञ्च मे॒ पुष्टि॑श्च मे\nवि॒भु च॑ मे प्र॒भु च॑ मे\nब॒हु च॑ मे॒ भूय॑श्च मे\nपू॒र्ण-ञ्च॑ मे पू॒र्णत॑र-ञ्च॒ मे-ऽक्षि॑तिश्च मे॒ कूय॑वाश्च॒ मे-ऽन्न॑-ञ्च॒ मे-ऽक्षु॑च्च मे\nव्री॒हय॑श्च मे॒ यवा᳚श्च मे॒\nमाषा᳚श्च मे॒ तिला᳚श्च मे\nमु॒द्गाश्च॑ मे ख॒ल्वा᳚श्च मे\nगो॒धूमा᳚श्च मे म॒सुरा᳚श्च मे\nप्रि॒यङ्ग॑वश्च॒ मे-ऽण॑वश्च मे"
+      }
+    ]
+  },
+  {
+    "num": 4,
+    "title": "Fourth Anuvaka",
+    "subtitle": "Nourishment & Agriculture",
+    "summary": "This section of the Chamakam focuses on blessings for nourishment, wealth, agriculture, food, and prosperity. It calls for an abundance of grains, milk, honey, and other vital resources, ensuring both physical nourishment and material prosperity. The recurring theme is the desire for completeness and abundance in all aspects of life, from food and agriculture to wealth and power. ūrkca me sūnṛtā ca me: May I have nourishment and sweet speech.",
+    "verses": [
+      {
+        "skt": "ūrkcha̍ mē sū̠nṛtā̍ cha mē̠\npaya̍ścha mē̠ rasa̍ścha mē\nghṛ̠ta-ñcha̍ mē̠ madhu̍ cha mē̠\nsagdhi̍ścha mē̠ sapī̍tiścha mē",
+        "mng": "ūrk: Nourishment or strength.\nsūnṛtā: Sweet speech, truthfulness, or pleasing words.\n\npayaśca me rasaśca me: May I have milk and juice (essence).\npayaḥ: Milk, often symbolizing nourishment.\nrasaḥ: Juice or essence, referring to vitality and taste.\n\nghṛtaṃ ca me madhu ca me: May I have clarified butter and honey.\nghṛtam: Clarified butter (ghee), a symbol of purity and nourishment.\nmadhu: Honey, representing sweetness and abundance.\n\nsagdhiśca me sapītiśca me: May I have thick cream and nourishment.\nsagdhiḥ: Thick cream or curd, another nourishing substance.\nsapītiḥ: Nourishment or sustenance.\n\nkṛṣiśca me vṛṣṭiśca me: May I have agriculture and rain.\nkṛṣiḥ: Agriculture or farming.\nvṛṣṭiḥ: Rain, essential for crops and fertility."
+      },
+      {
+        "skt": "kṛ̠ṣiścha̍ mē̠ vṛṣṭi̍ścha mē̠\njaitra̍-ñcha ma̠ audbhi̍dya-ñcha mē\nra̠yiścha̍ mē̠ rāya̍ścha mē\npu̠ṣṭa-ñcha mē̠ puṣṭi̍ścha mē",
+        "mng": "jaitraṃ ca ma audbhidyaṃ ca me: May I have victory and sprouting (growth).\njaitram: Victory or success.\naudbhidyam: Growth or sprouting, particularly of plants.\n\nrayiśca me rāyaśca me: May I have wealth and abundance.\nrayiḥ: Wealth or possessions.\nrāyaḥ: Abundance or prosperity.\n\npuṣṭaṃ ca me puṣṭiśca me: May I have fullness and nourishment.\npuṣṭam: Fullness or completeness.\npuṣṭiḥ: Nourishment or thriving.\n\nvibhu ca me prabhu ca me: May I be granted the gift of abundance of all varieties of cereals, millets and corn."
+      },
+      {
+        "skt": "vi̠bhu cha̍ mē pra̠bhu cha̍ mē\nba̠hu cha̍ mē̠ bhūya̍ścha mē\npū̠rṇa-ñcha̍ mē pū̠rṇata̍ra-ñcha̠ mē-'kṣi̍tiścha mē̠ kūya̍vāścha̠ mē-'nna̍-ñcha̠ mē-'kṣu̍chcha mē\nvrī̠haya̍ścha mē̠ yavā̎ścha mē̠",
+        "mng": "vibhu ca me: May I have abundance.\n\nprabhu ca me: May I have great plenty.\n\nbahu ca me bhūyaśca me: May I have plenty and increase.\nbahu: Plenty or abundance.\nbhūyaḥ: Increase or growth.\n\npūrṇaṃ ca me pūrṇataraṃ ca me: May I have fullness and greater fullness.\npūrṇam: Fullness or completeness.\npūrṇataram: Greater fullness or even more completeness."
+      },
+      {
+        "skt": "māṣā̎ścha mē̠ tilā̎ścha mē\nmu̠dgāścha̍ mē kha̠lvā̎ścha mē\ngō̠dhūmā̎ścha mē ma̠surā̎ścha mē\npri̠yaṅga̍vaścha̠ mē-'ṇa̍vaścha mē",
+        "mng": "'kṣitiśca me kūyavāśca me: May I have land and heaps of grain.\nkṣitiḥ: Land or earth.\nkūyavāḥ: Heaps of grain, symbolizing agricultural abundance.\n\n'nnaṃ ca me'kṣucca me: May I have food and sugarcane.\nannam: Food or nourishment.\nakṣu: Sugarcane, a symbol of sweetness and prosperity.\n\nvrīhayaśca me yavāśca me: May I have rice and barley.\nvrīhayaḥ: Rice, a staple grain in many cultures.\nyavāḥ: Barley, another important grain.\n\nmāṣāśca me tilāśca me: May I have black gram and sesame.\nmāṣāḥ: Black gram, a type of legume.\ntilāḥ: Sesame seeds, often used for oil and food."
+      },
+      {
+        "skt": "śyā̠mākā̎ścha mē nī̠vārā̎ścha mē",
+        "mng": "mudgāśca me khalvāśca me: May I have green gram and millet.\nmudgāḥ: Green gram (mung beans).\nkhalvāḥ: Millet, another grain.\n\ngodhūmāśca me masurāśca me: May I have wheat and lentils.\ngodhūmāḥ: Wheat, an essential grain.\nmasurāḥ: Lentils, a staple pulse.\n\npriyaṅgavaśca me'ṇavaśca me: May I have long pepper and small grains.\npriyaṅgavaḥ: Long pepper, a medicinal and culinary spice.\naṇavaḥ: Small grains or minute particles.\n\nśyāmakāśca me nīvārāśca me: May I have wild rice and other grains.\nśyāmakāḥ: A type of grain, possibly wild rice or millet.\nnīvārāḥ: Wild rice or another type of coarse grain.\nअश्मा॑ च मे॒ मृत्ति॑का च मे\nगि॒रय॑श्च मे॒ पर्व॑ताश्च मे॒\nसिक॑ताश्च मे॒ वन॒स्पत॑यश्च मे॒\nहिर॑ण्य-ञ्च॒ मे-ऽय॑श्च मे॒\nसीस॑-ञ्च॒ मे त्रपु॑श्च मे\nश्या॒म-ञ्च॑ मे लो॒ह-ञ्च॑ मे-ऽग्निश्च॑ म\nआप॑श्च मे वी॒रुध॑श्च म॒ ओष॑धयश्च मे\nकृष्टप॒च्य-ञ्च॑ मे-ऽकृष्टपच्य-ञ्च॑ मे\nग्रा॒म्याश्च॑ मे प॒शव॑ आर॒ण्याश्च॑ य॒ज्ञेन॑ कल्पन्तां\nवि॒त्त-ञ्च॑ मे॒ वित्ति॑श्च मे\nभू॒त-ञ्च॑ मे॒ भूति॑श्च मे॒\nवसु॑ च मे वस॒तिश्च॑ मे॒\nकर्म॑ च मे॒ शक्ति॑श्च॒ मे-ऽर्थ॑श्च म॒"
+      }
+    ]
+  },
+  {
+    "num": 5,
+    "title": "Fifth Anuvaka",
+    "subtitle": "Earth & Natural Elements",
+    "summary": "This section of the Chamakam calls for a broad spectrum of material and natural resources, such as metals, food, animals, and natural elements like fire and water. It also asks for spiritual and physical prosperity, strength, and the ability to perform righteous actions (karma) while living in a secure and prosperous dwelling. The invocations emphasize both the material and spiritual wealth necessary for a fulfilled life. aśmā ca me mṛttikā ca me: May I have stone and clay.",
+    "verses": [
+      {
+        "skt": "aśmā̍ cha mē̠ mṛtti̍kā cha mē\ngi̠raya̍ścha mē̠ parva̍tāścha mē̠\nsika̍tāścha mē̠ vana̠spata̍yaścha mē̠",
+        "mng": "aśmā: Stone or rock.\nmṛttikā: Clay or earth, often used for making pottery or bricks.\n\ngirayaśca me parvatāśca me: May I have mountains and hills.\ngirayaḥ: Mountains.\nparvatāḥ: Hills, similar to mountains but usually smaller in scale.\n\nsikatāśca me vanaspatayaśca me: May I have sand and forest trees.\nsikatāḥ: Sand or gravel.\nvanaspatayaḥ: Forest trees or large trees that grow in the wild.\n\nhiraṇyaṃ ca me'yaśca me: May I have gold and iron.\nhiraṇyam: Gold, a symbol of wealth and purity.\nayaḥ: Iron, representing strength and utility."
+      },
+      {
+        "skt": "hira̍ṇya-ñcha̠ mē-'ya̍ścha mē̠\nsīsa̍-ñcha̠ mē trapu̍ścha mē\nśyā̠ma-ñcha̍ mē lō̠ha-ñcha̍ mē-'gniścha̍ ma",
+        "mng": "sīsaṃ ca me trapuśca me: May I have lead and tin.\nsīsam: Lead, a heavy metal.\ntrapuḥ: Tin, often used in alloys like bronze.\n\nśyāmaṃ ca me lohaṃ ca me: May I have black iron and copper.\nśyāmam: Black iron, possibly referring to steel or a type of iron.\nloham: Copper, a valuable metal used for various purposes.\n\n'gniśca ma āpaśca me: May I have fire and water.\nagniḥ: Fire, a sacred element in Vedic rituals.\nāpaḥ: Water, essential for life and purification."
+      },
+      {
+        "skt": "āpa̍ścha mē vī̠rudha̍ścha ma̠ ōṣa̍dhayaścha mē\nkṛṣṭapa̠chya-ñcha̍ mē-'kṛṣṭapachya-ñcha̍ mē\ngrā̠myāścha̍ mē pa̠śava̍ āra̠ṇyāścha̍ ya̠jñēna̍ kalpantāṃ",
+        "mng": "vīrudhaśca ma oṣadhayaśca me: May I have herbs and medicinal plants.\nvīrudhaḥ: Herbs or small plants.\noṣadhayaḥ: Medicinal plants or herbs used for healing.\n\nkṛṣṭapacyaṃ ca me'kṛṣṭapacyaṃ ca me: May I have cultivated and uncultivated food.\nkṛṣṭapacyaṃ: Cultivated crops or food that is grown.\nakṛṣṭapacyaṃ: Wild or uncultivated food, food that grows naturally without farming.\n\ngrāmyāśca me paśava āraṇyāśca: May I have domesticated animals and wild animals.\ngrāmyāḥ: Domesticated animals, often referring to cattle or livestock.\nāraṇyāḥ: Wild animals, those that live in the forest or wilderness.\nyajñena kalpantāṃ: May they be fit for sacrifice.\nyajñena: Through sacrifice or ritual.\nkalpantām: Fit or appropriate, usually in the context of being used in rituals."
+      },
+      {
+        "skt": "vi̠tta-ñcha̍ mē̠ vitti̍ścha mē\nbhū̠ta-ñcha̍ mē̠ bhūti̍ścha mē̠\nvasu̍ cha mē vasa̠tiścha̍ mē̠",
+        "mng": "vittaṃ ca me vittiśca me: May I have wealth and the means of acquiring wealth.\nvittam: Wealth or riches.\nvittiḥ: The means or resources for acquiring wealth.\n\nbhūtaṃ ca me bhūtiśca me: May I have what exists and prosperity.\nbhūtam: That which exists, or present possessions.\nbhūtiḥ: Prosperity or success.\n\nvasu ca me vasatiśca me: May I have wealth and a dwelling place.\nvasu: Wealth or riches.\nvasatiḥ: Dwelling place, home, or residence."
+      },
+      {
+        "skt": "karma̍ cha mē̠ śakti̍ścha̠ mē-'rtha̍ścha ma̠\nēma̍ścha ma iti̍ścha mē̠ gati̍ścha mē",
+        "mng": "karma ca me śaktiśca me: May I have action and strength.\nkarma: Action, deed, or work.\nśaktiḥ: Strength or power.\n\n'rthaśca ma emaśca ma itiśca me: May I have purpose, acquisition, and completeness.\narthaḥ: Purpose,, or wealth.\nemaḥ: Acquisition or possession.\nitiḥ: Completion or conclusion.\n\ngatiśca me: May I have progress or movement.\ngatiḥ: Movement, progress, or the ability to advance.\nअ॒ग्निश्च॑ म॒ इन्द्र॑श्च मे॒\nसोम॑श्च म॒ इन्द्र॑श्च मे\nसवि॒ता च॑ म॒ इन्द्र॑श्च मे॒\nसर॑स्वती च म॒ इन्द्र॑श्च मे\nपू॒षा च॑ म॒ इन्द्र॑श्च मे॒\nबृह॒स्पति॑श्च म॒ इन्द्र॑श्च मे\nमि॒त्रश्च॑ म॒ इन्द्र॑श्च मे॒\nवरु॑णश्च म॒ इन्द्र॑श्च मे॒\nत्वष्ठा॑ च म॒ इन्द्र॑श्च मे\nधा॒ता च॑ म॒ इन्द्र॑श्च मे॒\nविष्णु॑श्च म॒ इन्द्र॑श्च मे-ऽश्विनौ॑ च म॒ इन्द्र॑श्च मे\nम॒रुत॑श्च म॒ इन्द्र॑श्च मे॒\nविश्वे॑ च मे दे॒वा इन्द्र॑श्च मे\nपृथि॒वी च॑ म॒ इन्द्र॑श्च मे-ऽन्तरि॑क्ष-ञ्च म॒ इन्द्र॑श्च मे\nद्यौश्च॑ म॒ इन्द्र॑श्च मे॒\nदिश॑श्च म॒ इन्द्र॑श्च मे\nमू॒र्धा च॑ म॒ इन्द्र॑श्च मे"
+      }
+    ]
+  },
+  {
+    "num": 6,
+    "title": "Sixth Anuvaka",
+    "subtitle": "Deities & Divine Invocations",
+    "summary": "This section of the Chamakam focuses on invoking various deities alongside Indra, the king of the gods, for their blessings. It includes a wide range of gods, such as Agni (fire), Sarasvatī (wisdom), Pūṣā (nourishment), Viṣṇu (preservation), and others who represent different aspects of life, nature, and the cosmos. The repetition of Indra emphasizes his leadership and protective power in all realms, from the Earth to the heavens.",
+    "verses": [
+      {
+        "skt": "a̠gniścha̍ ma̠ indra̍ścha mē̠\nsōma̍ścha ma̠ indra̍ścha mē\nsavi̠tā cha̍ ma̠ indra̍ścha mē̠\nsara̍svatī cha ma̠ indra̍ścha mē",
+        "mng": "agniśca ma indraśca me: May I have the blessings of Agni and Indra.\nagniḥ: The fire god, representing purity and transformation.\nindraḥ: The king of the gods, symbolizing strength and leadership.\n\nsomaśca ma indraśca me: May I have the blessings of Soma and Indra.\nsomaḥ: The moon and the divine nectar, symbolizing immortality and inspiration.\nindraḥ: Indra, again called upon for his might and authority.\n\nsavitā ca ma indraśca me: May I have the blessings of Savitā and Indra.\nsavitā: The sun god, who stimulates all life and represents illumination and energy.\nindraḥ: Indra, invoked again for protection and strength.\n\nsarasvatī ca ma indraśca me: May I have the blessings of Sarasvatī and Indra.\nsarasvatī: The goddess of wisdom, learning, and the arts.\nindraḥ: Indra, continuing to provide power and dominance."
+      },
+      {
+        "skt": "pū̠ṣā cha̍ ma̠ indra̍ścha mē̠\nbṛha̠spati̍ścha ma̠ indra̍ścha mē\nmi̠traścha̍ ma̠ indra̍ścha mē̠\nvaru̍ṇaścha ma̠ indra̍ścha mē̠",
+        "mng": "pūṣā ca ma indraśca me: May I have the blessings of Pūṣā and Indra.\npūṣā: The god of prosperity, nourishment, and well-being.\nindraḥ: Indra, for his protective qualities.\n\nbṛhaspatiśca ma indraśca me: May I have the blessings of Bṛhaspati and Indra.\nbṛhaspatiḥ: The teacher of the gods, representing wisdom and guidance.\nindraḥ: Indra, called again to support with his strength and leadership.\n\nmitraśca ma indraśca me: May I have the blessings of Mitra and Indra.\nmitraḥ: The god of friendship and harmony, often associated with contracts and agreements.\nindraḥ: Indra, once more for his might and sovereignty.\n\nvaruṇaśca ma indraśca me: May I have the blessings of Varuṇa and Indra.\nvaruṇaḥ: The god of the waters and cosmic law, symbolizing moral and physical order.\nindraḥ: Indra, continuing to provide power and defense."
+      },
+      {
+        "skt": "tvaṣṭhā̍ cha ma̠ indra̍ścha mē\ndhā̠tā cha̍ ma̠ indra̍ścha mē̠\nviṣṇu̍ścha ma̠ indra̍ścha mē-'śvinau̍ cha ma̠ indra̍ścha mē\nma̠ruta̍ścha ma̠ indra̍ścha mē̠",
+        "mng": "tvaṣṭā ca ma indraśca me: May I have the blessings of Tvaṣṭā and Indra.\ntvaṣṭā: The divine artisan or craftsman, representing creation and construction.\nindraḥ: Indra, as usual, for his strength and leadership.\n\ndhātā ca ma indraśca me: May I have the blessings of Dhātā and Indra.\ndhātā: The sustainer, one who upholds the universe and life.\nindraḥ: Indra, for continued protection and leadership.\n\nviṣṇuśca ma indraśca me: May I have the blessings of Viṣṇu and Indra.\nviṣṇuḥ: The preserver of the universe, representing balance and continuity.\nindraḥ: Indra, invoked here again for his authority and might.\n\naśvinau ca ma indraśca me: May I have the blessings of the Aśvin twins and Indra.\naśvinau: The divine twin horsemen, representing healing and protection.\nindraḥ: Indra, maintaining his role as a powerful protector."
+      },
+      {
+        "skt": "viśvē̍ cha mē dē̠vā indra̍ścha mē\npṛthi̠vī cha̍ ma̠ indra̍ścha mē-'ntari̍kṣa-ñcha ma̠ indra̍ścha mē\ndyauścha̍ ma̠ indra̍ścha mē̠\ndiśa̍ścha ma̠ indra̍ścha mē",
+        "mng": "marutaśca ma indraśca me: May I have the blessings of the Maruts and Indra.\nmarutaḥ: The storm gods, who bring energy, change, and transformation.\nindraḥ: Indra, for his strength to lead the divine forces.\n\nviśve ca me devā indraśca me: May I have the blessings of all the gods and Indra.\nviśve devāḥ: All the gods, a collective invocation for the blessings of the entire pantheon.\nindraḥ: Indra, the leader among the gods.\n\npṛthivī ca ma indraśca me: May I have the blessings of the Earth and Indra.\npṛthivī: The Earth goddess, symbolizing fertility, stability, and support.\nindraḥ: Indra, who protects and governs.\n\n'ntarikṣaṃ ca ma indraśca me: May I have the blessings of the atmosphere and Indra.\nantarikṣam: The intermediate space, the atmosphere or sky.\nindraḥ: Indra, who rules the heavens."
+      },
+      {
+        "skt": "mū̠rdhā cha̍ ma̠ indra̍ścha mē\npra̠jāpa̍tiścha ma̠ indra̍ścha mē",
+        "mng": "dyauśca ma indraśca me: May I have the blessings of the sky and Indra.\ndyauḥ: The sky, representing the higher realms or the celestial sphere.\nindraḥ: Indra, the king of the gods who resides in the heavens.\n\ndiśaśca ma indraśca me: May I have the blessings of the directions and Indra.\ndiśaḥ: The directions or quarters, which govern the various parts of the world.\nindraḥ: Indra, who governs all directions as the king of the gods.\n\nmūrdhā ca ma indraśca me: May I have the blessings of the head (cosmic summit) and Indra.\nmūrdhā: The head or summit, possibly referring to the highest point in creation, both physical and cosmic.\nindraḥ: Indra, overseeing the highest realms.\n\nprajāpatiśca ma indraśca me: May I have the blessings of Prajāpati and Indra.\nprajāpatiḥ: The lord of all creatures, representing the source of creation.\nindraḥ: Indra, who governs and protects the world.\nअ॒ग्ं॒शुश्च॑ मे र॒श्मिश्च॒ मे-ऽदा᳚भ्यश्च॒ मे-ऽधि॑पतिश्च म\nउपा॒ग्ं॒शुश्च॑ मे-ऽन्तर्या॒मश्च॑ म\nऐन्द्रवाय॒वश्च॑ मे मैत्रावरु॒णश्च॑ म\nआश्वि॒नश्च॑ मे प्रतिप्र॒स्थान॑श्च मे\nशु॒क्रश्च॑ मे म॒न्थी च॑ म\nआग्रय॒णश्च॑ मे वैश्वदे॒वश्च॑ मे\nध्रु॒वश्च॑ मे वैश्वान॒रश्च॑ म\nऋतुग्र॒हाश्च॑ मे-ऽतिग्रा॒ह्या᳚श्च म\nऐन्द्रा॒ग्नश्च॑ मे वैश्वदे॒वश्च॑ मे\nमरुत्व॒तीया᳚श्च मे माहे॒न्द्रश्च॑ म\nआदि॒त्यश्च॑ मे सावि॒त्रश्च॑ मे\nसारस्व॒तश्च॑ मे पौ॒ष्णश्च॑ मे"
+      }
+    ]
+  },
+  {
+    "num": 7,
+    "title": "Seventh Anuvaka",
+    "subtitle": "Ritual Vessels & Soma Sacrifice",
+    "summary": "This Seventh Anuvaka of the Chamakam lists the various vessels necessary for Soma Yagya sacrifices in the “Yagya Kunda”, (Altar) the site of offerings to the Fire God – Agni. In other words, each word represents an aspect of self offering to the respective Deity. It asks for the blessings of the gods of Soma, Indra, Vāyu, the Aśvins, and others involved in specific sacrifices and cosmic functions. There is a focus on different aspects of nature, stability, prosperity, and the seasonal cycles, all important in maintaining harmony and balance in life.",
+    "verses": [
+      {
+        "skt": "a̠gṃ̠śuścha̍ mē ra̠śmiścha̠ mē-'dā̎bhyaścha̠ mē-'dhi̍patiścha ma\nupā̠gṃ̠śuścha̍ mē-'ntaryā̠maścha̍ ma\naindravāya̠vaścha̍ mē maitrāvaru̠ṇaścha̍ ma",
+        "mng": "agͫśuśca me raśmiśca me'dābhyaśca me'dhipatiśca ma: May I have the Agͫśu vessel, the Raśmi vessel, the Dābhya vessel, and the Adhipati vessel.\nagͫśuḥ: A small Soma vessel used in Vedic rituals.\nraśmiḥ: Another vessel associated with Soma or the rays (reins) of light.\ndābhyaḥ: A vessel used in specific sacrificial offerings.\nadhipatiḥ: A vessel for the chief offering, symbolizing control or lordship in the ritual.\n\nupāgͫśuśca me'ntaryāmaśca ma: May I have the Upāgͫśu and Antaryāma vessels.\nupāgͫśuḥ: A small vessel used in the Soma sacrifice, typically to hold or pour Soma juice.\nantaryāmaḥ: Another vessel related to Soma, used in intermediate stages of the sacrifice.\n\naindravāyavaśca me maitrāvaruṇaśca ma: May I have the Indra-Vāyu vessel and the Maitrāvaruṇa vessel.\naindravāyavaḥ: A vessel used in sacrifices to Indra and Vāyu (wind god).\nmaitrāvaruṇaḥ: A vessel used in rituals related to Mitra and Varuṇa, gods of contracts and cosmic order."
+      },
+      {
+        "skt": "āśvi̠naścha̍ mē pratipra̠sthāna̍ścha mē\nśu̠kraścha̍ mē ma̠nthī cha̍ ma\nāgraya̠ṇaścha̍ mē vaiśvadē̠vaścha̍ mē",
+        "mng": "āśvinaśca me pratiprasthānaśca me: May I have the Aśvina vessel and the Pratiprasthāna vessel.\nāśvinaḥ: A vessel associated with the Aśvins, the twin gods of healing.\npratiprasthānaḥ: A vessel or item used at the concluding part of the ritual.\n\nśukraśca me manthī ca ma: May I have the Śukra vessel and the Manthī (churning) vessel.\nśukraḥ: A vessel associated with purity, often used in rituals related to Soma.\nmanthī: The vessel used for churning the Soma during the sacrifice.\n\nāgrayaṇaśca me vaiśvadevaśca me: May I have the Āgrayaṇa vessel and the Vaiśvadeva vessel.\nāgrayaṇaḥ: A vessel for the first offering of the year or the first-fruits sacrifice.\nvaiśvadevaḥ: A vessel used in offerings to all the gods (Viśve Devāḥ)."
+      },
+      {
+        "skt": "dhru̠vaścha̍ mē vaiśvāna̠raścha̍ ma\nṛtugra̠hāścha̍ mē-'tigrā̠hyā̎ścha ma\naindrā̠gnaścha̍ mē vaiśvadē̠vaścha̍ mē",
+        "mng": "dhruvaśca me vaiśvānaraśca ma: May I have the Dhruva and Vaiśvānara vessels.\ndhruvaḥ: A fixed or stable vessel used in Vedic rituals, symbolizing permanence.\nvaiśvānaraḥ: A vessel used in sacrifices to Agni (the universal fire).\n\nṛtugrahāśca me'tigrāhyāśca ma: May I have the seasonal libation vessels and the additional libation vessels.\nṛtugrahāḥ: Vessels used for offerings made during specific seasons or seasonal rites.\natigrāhyāḥ: Vessels used for special or additional libations.\n\naindrāgnaśca me vaiśvadevaśca me: May I have the Indra-Agni vessel and the Vaiśvadeva vessel.\naindrāgnaḥ: A vessel used in sacrifices dedicated to both Indra and Agni.\nvaiśvadevaḥ: A vessel used for the universal offering to all the gods (Viśve Devāḥ)."
+      },
+      {
+        "skt": "marutva̠tīyā̎ścha mē māhē̠ndraścha̍ ma\nādi̠tyaścha̍ mē sāvi̠traścha̍ mē\nsārasva̠taścha̍ mē pau̠ṣṇaścha̍ mē",
+        "mng": "marutvatīyāśca me māhendraśca ma: May I have the Marutvatīya and Māhendra vessels.\nmarutvatīyaḥ: A vessel used in sacrifices related to the Maruts, the storm gods.\nmāhendraḥ: A vessel used in sacrifices dedicated to the great Indra.\n\nādityaśca me sāvitraśca me: May I have the Āditya and Sāvitra vessels.\nādityaḥ: A vessel used in sacrifices to the Ādityas (solar deities).\nsāvitraḥ: A vessel associated with the sun god Sāvitrī."
+      },
+      {
+        "skt": "pātnīva̠taścha̍ mē hāriyōja̠naścha̍ mē",
+        "mng": "sārasvataśca me pauṣṇaśca me: May I have the Sārasvata and Pauṣṇa vessels.\nsārasvataḥ: A vessel associated with Sarasvatī, the goddess of wisdom and learning.\npauṣṇaḥ: A vessel associated with Pūṣan, the god of prosperity and nourishment.\n\npātnīvataśca me hāriyojanaśca me: May I have the Pātnīvata vessel and the Hāriyojana vessel.\npātnīvataḥ: A vessel used in rituals that involve the gods along with their consorts (gods who have wives).\nhāriyojanaḥ: A vessel associated with deities that move in golden chariots, such as Pūṣan or the Aśvins.\nइ॒ध्मश्च॑ मे ब॒र्​हिश्च॑ मे॒\nवेदि॑श्च मे॒ दिष्णि॑याश्च मे॒\nस्रुच॑श्च मे चम॒साश्च॑ मे॒\nग्रावा॑णश्च मे॒ स्वर॑वश्च म\nउपर॒वाश्च॑ मे-ऽधि॒षव॑णे च मे\nद्रोणकल॒शश्च॑ मे वाय॒व्या॑नि च मे\nपूत॒भृच्च॑ म आधव॒नीय॑श्च म॒\nआग्नी᳚ध्र-ञ्च मे हवि॒र्धान॑-ञ्च मे\nगृ॒हाश्च॑ मे॒ सद॑श्च मे पुरो॒डाशा᳚श्च मे"
+      }
+    ]
+  },
+  {
+    "num": 8,
+    "title": "Eighth Anuvaka",
+    "subtitle": "Sacred Ritual Implements",
+    "summary": "The Eight Anuvaka of the Chamakam focuses on the various components and tools used in Vedic rituals, including the sacred grass, firewood, vessels, ladles, cups, pressing stones, altars, and offerings. It also invokes blessings for the sacred seats, the final purification ritual, and invocations of well-being. Each of these elements plays a crucial role in maintaining the sanctity and effectiveness of the sacrificial rites, ensuring both spiritual and material prosperity.",
+    "verses": [
+      {
+        "skt": "i̠dhmaścha̍ mē ba̠r​hiścha̍ mē̠\nvēdi̍ścha mē̠ diṣṇi̍yāścha mē̠",
+        "mng": "idhmaśca me barhiśca me: May I have the blessings of fuel wood and sacred grass.\nidhmaḥ: Fuel wood, used for feeding the sacrificial fire.\nbarhiḥ: Sacred grass, specifically the kuśa grass, used in Vedic rituals.\n\nvediśca me dhiṣṇiyāśca me: May I have the blessings of the altar and the sacrificial hearth.\nvediḥ: The altar, where Vedic rituals and sacrifices are performed.\ndhiṣṇiyāḥ: The sacrificial hearth or place where the sacred fire is kept.\n\nsrucaśca me camasāśca me: May I have the blessings of sacrificial ladles and cups.\nsrucaḥ: Sacrificial ladles, used for offering ghee or other offerings into the fire.\ncamasāḥ: Cups or vessels used to hold Soma or other offerings during rituals."
+      },
+      {
+        "skt": "srucha̍ścha mē chama̠sāścha̍ mē̠\ngrāvā̍ṇaścha mē̠ svara̍vaścha ma",
+        "mng": "grāvāṇaśca me svaravaśca ma: May I have the blessings of the pressing stones and the invocations.\ngrāvāṇaḥ: Pressing stones, used to extract Soma juice during sacrifices.\nsvaravaḥ: Invocations or hymns, particularly those sung or chanted during rituals.\n\nuparavāśca me'dhiṣavaṇe ca me: May I have the blessings of the lower altar and the pressing stones.\nuparavāḥ: A lower or secondary altar used during sacrifices.\nadhiṣavaṇe: Refers to the pressing stones used in preparing Soma during rituals.\n\ndroṇakalaśaśca me: May I have the blessings of large vessels and containers.\ndroṇakalaśaḥ: Large vessels or pots used to hold Soma or other ritual substances."
+      },
+      {
+        "skt": "upara̠vāścha̍ mē-'dhi̠ṣava̍ṇē cha mē\ndrōṇakala̠śaścha̍ mē vāya̠vyā̍ni cha mē",
+        "mng": "vāyavyāni ca me pūtabhṛcca ma: May I have the blessings of strainers and carriers of offerings.\nvāyavyāni: Strainers, used for filtering Soma or other liquids during rituals.\npūtabhṛt: A vessel or carrier that holds purified offerings.\n\nādhavanīyaśca ma: May I have the blessings of the sacrificial spoon.\nādhavanīyaḥ: A spoon used in rituals for pouring offerings into the sacred fire.\n\nāgnīdhraṃ ca me havirdhānaṃ ca me: May I have the blessings of the fire altar and the offering altar.\nāgnīdhraṃ: The fire altar or the priest responsible for maintaining the sacred fire.\nhavirdhānam: The altar or place where offerings (havis) are made during the ritual."
+      },
+      {
+        "skt": "pūta̠bhṛchcha̍ ma ādhava̠nīya̍ścha ma̠\nāgnī̎dhra-ñcha mē havi̠rdhāna̍-ñcha mē",
+        "mng": "gṛhāśca me sadaśca me: May I have the blessings of the ritual house and the sacred seat.\ngṛhāḥ: The ritual house or space where sacrifices and rituals are performed.\nsadaḥ: The sacred seat, often referring to the seat of the priests or the space reserved for rituals.\n\npuroḍāśāśca me pacatāśca me: May I have the blessings of the sacrificial cakes and cooked offerings.\npuroḍāśaḥ: Sacrificial cakes offered during rituals, often made of rice or barley.\npacatāḥ: Cooked offerings, prepared as part of the sacrifice."
+      },
+      {
+        "skt": "gṛ̠hāścha̍ mē̠ sada̍ścha mē purō̠ḍāśā̎ścha mē\npacha̠tāścha̍ mē-'vabhṛthaścha̍ mē svagākā̠raścha̍ mē",
+        "mng": "'vabhṛthaśca me: May I have the blessings of the final ablution ritual.\navabhṛthaḥ: The final purification or bathing ceremony performed at the end of a ritual.\n\nsvagākāraśca me: May I have the blessings of the invocation of well-being.\nsvagākāraḥ: The invocation or chant for well-being and auspiciousness, often performed at the conclusion of a ritual.\nअ॒ग्निश्च॑ मे घ॒र्मश्च॑ मे॒-ऽर्कश्च॑ मे॒\nसूर्य॑श्च मे प्रा॒णश्च॑ मे-ऽश्वमे॒धश्च॑ मे\nपृथि॒वी च॒ मे-ऽदि॑तिश्च मे॒ दिति॑श्च मे॒\nद्यौश्च॑ मे॒ शक्व॑रीर॒ङ्गुल॑यो॒ दिश॑श्च मे\nय॒ज्ञेन॑ कल्पन्ता॒मृक्च॑ मे॒\nसाम॑ च मे॒ स्तोम॑श्च मे॒\nयजु॑श्च मे दी॒क्षा च॑ मे॒\nतप॑श्च म ऋ॒तुश्च॑ मे\nव्र॒त-ञ्च॑ मे-ऽहोरा॒त्रयो᳚र्वृ॒ष्ट्या बृ॑हद्रथन्त॒रे च॒ मे"
+      }
+    ]
+  },
+  {
+    "num": 9,
+    "title": "Ninth Anuvaka",
+    "subtitle": "Seasons, Fire & Cosmic Order",
+    "summary": "This Ninth Anuvaka of the Chamakam invokes blessings from a wide array of elements: fire, sun, life force, the earth, seasons, and sacred texts. It emphasizes the importance of maintaining harmony with both natural cycles (like day and night) and spiritual practices (through sacrifices and rituals). The combination of physical and cosmic entities highlights the holistic nature of Vedic invocations. agniśca me gharmaśca me'rkaśca me sūryaśca me: May I have the blessings of Agni, warmth, light, and the Sun.",
+    "verses": [
+      {
+        "skt": "a̠gniścha̍ mē gha̠rmaścha̍ mē̠-'rkaścha̍ mē̠\nsūrya̍ścha mē prā̠ṇaścha̍ mē-'śvamē̠dhaścha̍ mē",
+        "mng": "agniḥ: The fire god, representing purification and energy.\ngharmaḥ: Warmth, often referring to heat from the sacrificial fire.\nṛkaḥ: Light or radiance, possibly referring to the light of fire or the sun.\nsūryaḥ: The Sun god, symbolizing life, vitality, and illumination.\n\nprāṇaśca me'śvamedhaśca me: May I have the blessings of life force (breath) and the Ashvamedha sacrifice.\nprāṇaḥ: The vital breath or life force, essential for life.\naśvamedhaḥ: The Ashvamedha, a powerful Vedic horse sacrifice symbolizing sovereignty and abundance."
+      },
+      {
+        "skt": "pṛthi̠vī cha̠ mē-'di̍tiścha mē̠ diti̍ścha mē̠\ndyauścha̍ mē̠ śakva̍rīra̠ṅgula̍yō̠ diśa̍ścha mē",
+        "mng": "pṛthivī ca me'ditiśca me: May I have the blessings of the Earth and Aditi.\npṛthivī: The Earth, representing stability, fertility, and sustenance.\naditiḥ: The mother of the gods, symbolizing infinite space, freedom, and support.\n\nditiśca me dyauśca me: May I have the blessings of Diti and the Sky.\nditiḥ: Diti, associated with material desires and the mother of demons.\ndyauḥ: The Sky, representing the celestial or heavenly realms."
+      },
+      {
+        "skt": "ya̠jñēna̍ kalpantā̠mṛkcha̍ mē̠\nsāma̍ cha mē̠ stōma̍ścha mē̠",
+        "mng": "śakkvarīraṅgulayo diśaśca me yajñena kalpantām: May I have the blessings of the rhythm, fingers, and the directions through sacrifice.\nśakkvarīḥ: A meter used in Vedic hymns, symbolizing rhythm.\naṅgulayaḥ: Fingers, often referring to precise actions during rituals.\ndiśaḥ: The directions, representing orientation and guidance.\n\nṛkca me sāma ca me stomaśca me: May I have the blessings of the Rig Veda, Sama Veda, and hymns of praise.\nṛk: Refers to the Rig Veda, the oldest of the Vedic scriptures.\nsāma: Refers to the Sama Veda, which is associated with melodies and music in the Vedic rituals.\nstomaḥ: Hymns of praise or eulogies."
+      },
+      {
+        "skt": "yaju̍ścha mē dī̠kṣā cha̍ mē̠\ntapa̍ścha ma ṛ̠tuścha̍ mē",
+        "mng": "yajuśca me dīkṣā ca me tapaśca ma: May I have the blessings of the Yajur Veda, consecration, and austerity.\nyajuḥ: Refers to the Yajur Veda, focusing on the prose mantras used in rituals.\ndīkṣā: Consecration or initiation, a purification ritual.\ntapaḥ: Austerity, penance, or spiritual discipline.\n\nṛtuśca me vrataṃ ca me: May I have the blessings of the seasons and vows.\nṛtuḥ: Seasons, symbolizing the natural cycle and order.\nvratam: Vows or observances, symbolizing discipline and dedication."
+      },
+      {
+        "skt": "vra̠ta-ñcha̍ mē-'hōrā̠trayō̎rvṛ̠ṣṭyā bṛ̍hadrathanta̠rē cha̠ mē\nya̠jñēna̍ kalpētām",
+        "mng": "'horātrayorvṛṣṭyā bṛhadrathantare ca me yajñena kalpetām: May I have the blessings of day and night, rain, and the great intermediate (cycle), all fulfilled through sacrifice.\nahorātrayoḥ: Day and night, representing the passage of time.\nvṛṣṭyā: Rain, symbolizing fertility and life-sustaining water.\nbṛhadrathantare: A great cycle or intermediary period, often referring to significant cosmic or ritual cycles.\nगर्भा᳚श्च मे व॒त्साश्च॑ मे॒\nत्र्यवि॑श्च मे त्र्य॒वीच॑ मे\nदित्य॒वाट् च॑ मे दित्यौ॒ही च॑ मे॒\nपञ्चा॑विश्च मे पञ्चा॒वी च॑ मे\nत्रिव॒त्सश्च॑ मे त्रिव॒त्सा च॑ मे\nतुर्य॒वाट् च॑ मे तुर्यौ॒ही च॑ मे\nपष्ठ॒वाट् च॑ मे पष्ठौ॒ही च॑ म\nउ॒क्षा च॑ मे व॒शा च॑ म\nऋष॒भश्च॑ मे वे॒हच्च॑ मे-ऽन॒ड्वाञ्च मे\nधे॒नुश्च॑ म॒ आयु॑र्य॒ज्ञेन॑ कल्पतां\nप्रा॒णो य॒ज्ञेन॑ कल्पतामपा॒नो य॒ज्ञेन॑ कल्पतां॒\nव्या॒नो य॒ज्ञेन॑ कल्पतां॒\nचक्षु॑र्य॒ज्ञेन॑ कल्पता॒ग्॒ श्रोत्रं॑-यँ॒ज्ञेन॑ कल्पतां॒\nमनो॑ य॒ज्ञेन॑ कल्पतां॒\nवाग्य॒ज्ञेन॑ कल्पतामा॒त्मा य॒ज्ञेन॑ कल्पतां"
+      }
+    ]
+  },
+  {
+    "num": 10,
+    "title": "Tenth Anuvaka",
+    "subtitle": "Cattle, Fertility & Life Forces",
+    "summary": "This Tenth Anuvaka of the Chamakam focuses on a variety of blessings related to fertility, livestock, and life energy. It emphasizes the importance of fulfilling all aspects of life—physical, sensory, mental, and spiritual—through the performance of sacrifices and rituals. The invocation also includes a request for strength and abundance in cattle, reflecting the agrarian importance of livestock in sustaining wealth and prosperity.",
+    "verses": [
+      {
+        "skt": "garbhā̎ścha mē va̠tsāścha̍ mē̠\ntryavi̍ścha mē trya̠vīcha̍ mē\nditya̠vāṭ cha̍ mē dityau̠hī cha̍ mē̠\npañchā̍viścha mē pañchā̠vī cha̍ mē",
+        "mng": "garbhāśca me vatsāśca me: May I have blessings of pregnancies and calves.\ngarbhāḥ: Pregnancies or unborn offspring, symbolizing fertility.\nvatsāḥ: Calves, representing young animals and abundance in livestock.\n\ntryaviśca me tryavī ca me: May I have blessings of triplet-bearing males and females.\ntryaviḥ: A male that produces or accompanies triplets (usually cattle).\ntryavī: A female that gives birth to triplets, symbolizing abundance.\n\ndityavāṭ ca me dityauhī ca me: May I have blessings of quadruplet-bearing males and females.\ndityavāṭ: A male that produces or is associated with quadruplets.\ndityauhī: A female that gives birth to quadruplets.\n\npañcāviśca me pañcāvī ca me: May I have blessings of quintuplet-bearing males and females.\npañcāviḥ: A male producing or accompanying quintuplets.\npañcāvī: A female that bears quintuplets.\n\ntrivatsaśca me trivatsā ca me: May I have blessings of three-year-old male and female cattle.\ntrivatsaḥ: A three-year-old male, especially a bull or ox.\ntrivatsā: A three-year-old female, symbolizing strength and maturity in livestock."
+      },
+      {
+        "skt": "triva̠tsaścha̍ mē triva̠tsā cha̍ mē\nturya̠vāṭ cha̍ mē turyau̠hī cha̍ mē\npaṣṭha̠vāṭ cha̍ mē paṣṭhau̠hī cha̍ ma\nu̠kṣā cha̍ mē va̠śā cha̍ ma",
+        "mng": "turyavāṭ ca me turyauhī ca me: May I have blessings of four-year-old male and female cattle.\nturyavāṭ: A four-year-old male.\nturyauhī: A four-year-old female.\n\npaṣṭhavāṭ ca me paṣṭhauhī ca me: May I have blessings of six-year-old male and female cattle.\npaṣṭhavāṭ: A six-year-old male.\npaṣṭhauhī: A six-year-old female.\n\nukṣā ca me vaśā ca ma: May I have blessings of a bull and a cow.\nukṣā: A bull, symbolizing strength and virility.\nvaśā: A cow, symbolizing nurturing and abundance.\n\nṛṣabhaśca me vehacca me: May I have blessings of a bull and a strong male.\nṛṣabhaḥ: A bull, representing leadership and fertility.\nvehacca: A powerful or strong male."
+      },
+      {
+        "skt": "ṛṣa̠bhaścha̍ mē vē̠hachcha̍ mē-'na̠ḍvāñcha mē\ndhē̠nuścha̍ ma̠ āyu̍rya̠jñēna̍ kalpatāṃ\nprā̠ṇō ya̠jñēna̍ kalpatāmapā̠nō ya̠jñēna̍ kalpatā̠ṃ\nvyā̠nō ya̠jñēna̍ kalpatā̠ṃ",
+        "mng": "'naḍvāñca me dhenuśca ma: May I have blessings of a bull and a milking cow.\nnaḍvāñ: A bull, possibly referring to a domesticated or serviceable one.\ndhenuḥ: A milking cow, representing sustenance and wealth.\nāyuryajñena kalpatāṃ: May my life be fulfilled through sacrifice.\nāyuḥ: Life or longevity.\nyajñena kalpatām: May it be fulfilled through sacrifice or ritual offerings.\n\nprāṇo yajñena kalpatāṃ: May my breath be fulfilled through sacrifice.\nprāṇaḥ: Breath or vital force.\nyajñena kalpatām: Fulfilled through sacrifice or rituals.\n\napāno yajñena kalpatāṃ: May my exhalation be fulfilled through sacrifice.\napānaḥ: Exhalation or outward breath.\nyajñena kalpatām: Fulfilled through sacrifice or offerings.\n\nvyāno yajñena kalpatāṃ: May my energy flow be fulfilled through sacrifice.\nvyānaḥ: The vital energy that governs the circulation of energy in the body.\nyajñena kalpatām: Fulfilled through sacrifice or rituals."
+      },
+      {
+        "skt": "chakṣu̍rya̠jñēna̍ kalpatā̠g̠ śrōtra̍ṃ ya̠jñēna̍ kalpatā̠ṃ\nmanō̍ ya̠jñēna̍ kalpatā̠ṃ\nvāgya̠jñēna̍ kalpatāmā̠tmā ya̠jñēna̍ kalpatāṃ\nya̠jñō ya̠jñēna̍ kalpatām",
+        "mng": "cakṣuryajñena kalpatām śrotraṃ yajñena kalpatāṃ: May my sight and hearing be fulfilled through sacrifice.\ncakṣuḥ: Eyes or vision.\nśrotraṃ: Ears or hearing.\nyajñena kalpatām: Fulfilled through sacrifice.\n\nmano yajñena kalpatāṃ vāgyajñena kalpatām: May my mind and speech be fulfilled through sacrifice.\nmanaḥ: Mind or thought.\nvāk: Speech.\nyajñena kalpatām: Fulfilled through sacrifice or rituals.\n\nātmā yajñena kalpatāṃ: May my soul be fulfilled through sacrifice.\nātmā: The soul or self.\nyajñena kalpatām: Fulfilled through sacrifice.\n\nyajño yajñena kalpatām: May the sacrifice itself be fulfilled through sacrifice.\nyajñaḥ: Sacrifice or ritual offering.\nyajñena kalpatām: Fulfilled through sacrifice or offerings.\nएका॑ च मे ति॒स्रश्च॑ मे॒\nपञ्च॑ च मे स॒प्त च॑ मे॒\nनव॑ च म॒ एका॑दश च मे॒\nत्रयो॑दश च मे॒ पञ्च॑दश च मे\nस॒प्तद॑श च मे॒ नव॑दश च म॒\nएक॑विग्ंशतिश्च मे॒ त्रयो॑विग्ंशतिश्च मे॒\nपञ्च॑विग्ंशतिश्च मे स॒प्तविग्ं॑शतिश्च मे॒\nनव॑विग्ंशतिश्च म॒ एक॑त्रिग्ंशच्च मे॒\nत्रय॑स्त्रिग्ंशच्च मे॒ चत॑स्रश्च मे॒-ऽष्टौ च॑ मे॒\nद्वाद॑श च मे॒ षोड॑श च मे\nविग्ंश॒तिश्च॑ मे॒ चतु॑र्विग्ंशतिश्च मे॒-ऽष्टाविग्ं॑शतिश्च मे॒\nद्वात्रिग्ं॑शच्च मे॒ षट्-त्रिग्ं॑शच्च मे\nचत्वारि॒ग्ं॒शच्च॑ मे॒ चतु॑श्चत्वारिग्ंशच्च मे-ऽष्टाच॑त्वारिग्ंशच्च मे॒\nवाज॑श्च प्रस॒वश्चा॑पि॒जश्च\nक्रतु॑श्च॒ सुव॑श्च मू॒र्धा च॒\nव्यश्नि॑यश्चान्त्याय॒नश्चान्त्य॑श्च"
+      }
+    ]
+  },
+  {
+    "num": 11,
+    "title": "Eleventh Anuvaka",
+    "subtitle": "Numerical Invocations",
+    "summary": "This Eleventh Anuvaka of the Chamakam is a series of numerical blessings, invoking protection, success, and abundance at various stages, numbers, and aspects of life. The numbers correspond to various entities and stages in Vedic rituals or life stages. The final part of the invocation asks for strength, progeny, heaven, and dominion over the world. ekā ca me tisraśca me pañca ca me sapta ca me nava ca ma: May I have one, three, five, seven, and nine.",
+    "verses": [
+      {
+        "skt": "ēkā̍ cha mē ti̠sraścha̍ mē̠\npañcha̍ cha mē sa̠pta cha̍ mē̠\nnava̍ cha ma̠ ēkā̍daśa cha mē̠\ntrayō̍daśa cha mē̠ pañcha̍daśa cha mē",
+        "mng": "ekā: One.\ntisraḥ: Three.\npañca: Five.\nsapta: Seven.\nnava: Nine.\n\nekādaśa ca me trayodaśa ca me pañcadaśa ca me: May I have eleven, thirteen, and fifteen.\nekādaśa: Eleven.\ntrayodaśa: Thirteen.\npañcadaśa: Fifteen.\n\nsaptadaśa ca me navadaśa ca ma: May I have seventeen and nineteen.\nsaptadaśa: Seventeen.\nnavadaśa: Nineteen."
+      },
+      {
+        "skt": "sa̠ptada̍śa cha mē̠ nava̍daśa cha ma̠\nēka̍vigṃśatiścha mē̠ trayō̍vigṃśatiścha mē̠\npañcha̍vigṃśatiścha mē sa̠ptavig̍ṃśatiścha mē̠\nnava̍vigṃśatiścha ma̠ ēka̍trigṃśachcha mē̠",
+        "mng": "ekavigͫśatiśca me trayovigͫśatiśca me pañcavigͫśatiśca: May I have twenty-one, twenty-three, and twenty-five.\nekavigͫśati: Twenty-one.\ntrayovigͫśati: Twenty-three.\npañcavigͫśati: Twenty-five.\n\nsaptavigͫśatiśca me navavigͫśatiśca ma: May I have twenty-seven and twenty-nine.\nsaptavigͫśati: Twenty-seven.\nnavavigͫśati: Twenty-nine.\n\nekatrigͫśacca me trayastrigͫśacca me: May I have thirty-one and thirty-three.\nekatrigͫśa: Thirty-one.\ntrayastrigͫśa: Thirty-three."
+      },
+      {
+        "skt": "traya̍strigṃśachcha mē̠ chata̍sraścha mē̠-'ṣṭau cha̍ mē̠\ndvāda̍śa cha mē̠ ṣōḍa̍śa cha mē\nvigṃśa̠tiścha̍ mē̠ chatu̍rvigṃśatiścha mē̠-'ṣṭāvig̍ṃśatiścha mē̠\ndvātrig̍ṃśachcha mē̠ ṣaṭ-trig̍ṃśachcha mē",
+        "mng": "catasraśca me'ṣṭau ca me dvādaśa ca me ṣoḍaśa ca me: May I have four, eight, twelve, and sixteen.\ncatasraḥ: Four.\naṣṭau: Eight.\ndvādaśa: Twelve.\nṣoḍaśa: Sixteen.\n\nvigͫśatiśca me caturvigͫśatiśca me: May I have twenty and twenty-four.\nvigͫśati: Twenty.\ncaturvigͫśati: Twenty-four.\n\n'ṣṭāvigͫśatiśca me dvātrigͫśacca me: May I have twenty-eight and thirty-two.\naṣṭāvigͫśati: Twenty-eight.\ndvātrigͫśa: Thirty-two."
+      },
+      {
+        "skt": "chatvāri̠g̠ṃśachcha̍ mē̠ chatu̍śchatvārigṃśachcha mē-'ṣṭācha̍tvārigṃśachcha mē̠\nvāja̍ścha prasa̠vaśchā̍pi̠jaścha\nkratu̍ścha̠ suva̍ścha mū̠rdhā cha̠\nvyaśni̍yaśchāntyāya̠naśchāntya̍ścha",
+        "mng": "ṣaṭtrigͫśacca me catvarigͫśacca me: May I have thirty-six and forty.\nṣaṭtrigͫśa: Thirty-six.\ncatvarigͫśa: Forty.\n\ncatuścatvārigͫśacca me'ṣṭācatvārigͫśacca me: May I have forty-four and forty-eight.\ncatuścatvārigͫśa: Forty-four.\naṣṭācatvārigͫśa: Forty-eight.\n\nvājaśca prasavaścāpijaśca kratuśca suvaśca: May I have strength, progeny, the ability to act, and heaven.\nvājaḥ: Strength, energy, or vigor.\nprasavaḥ: Progeny, offspring, or fertility.\nāpijaḥ: The ability to act or perform.\nkratuḥ: Willpower or resolution.\nsuvaḥ: Heaven, the celestial realm."
+      },
+      {
+        "skt": "bhauva̠naścha̠ bhuva̍na̠śchādhi̍patiścha",
+        "mng": "mūrdhā ca vyaśniyaścāntyāyanaścāntyaśca bhauvanaśca: May I have the summit, pervasiveness, the final resting place, and prosperity.\nmūrdhā: The head or summit, the highest point.\nvyaśniyaḥ: Pervasiveness, spread over everything.\nantyāyanaḥ: The final resting place or end destination.\nantyaḥ: The end or ultimate.\nbhauvanaḥ: Prosperity or well-being in the world.\nbhuvanaścādhipatiśca: May I have dominion over the world and its lordship.\nbhuvanaḥ: The world or realm.\nadhipatiḥ: Lordship or sovereignty..\nRelated Shlokas\nAksharamalika Shiva Stotram\nAksharamanamalai\nAnanda Lahari\nAnayasena Maranam\nArdha Narishvara Stotram\nArunachala Akshara Mani Mala Stotram\nArunachala Ashtakam\nBhoothanath Ashtakam\nBilvashtakam\nBilvashtakam 14 Verses\nChandrashekhara Ashtakam\nDaridrya Dahana Shiva Stotram\nDwadasa Jyotirlinga Stotram\nKalabhairava Ashtakam\nKaracharana Kritham\nKarpura Gauram\nKashi Panchakam\nKasi Viswanathashtakam\nLingashtakam\nManyu Suktam\nMargabandhu Stotram\nMruthyunjayaya Rudraya\nNamasthe asthu Bhagavan\nNataraja Stotram\nParvati Vallabha Ashtakam\nPashupati Ashtakam\nRudraAshtakam\nRudram Laghunyasam\nRudram Namakam\nSata Rudreeyam\nShambu Devam Sakalajagatam\nShambu Stuti\nSharabhesha Ashtakam\nShiva Aparadha Kshamapana Stotram\nShiva Ashtakam\nShiva Ashtottara Sata Nama Stotram\nShiva Bhujanga Prayata Stotram\nShiva Keshadi Padanta Varnana Stotram\nShiva Mahimna Stotram\nShiva Manasa Puja\nShiva Mangalashtakam\nShiva Padadi Keshanta Varnana Stotram\nShiva Panchakshara Stotram\nShiva Pratah Smaranam\nShiva Sahasranama Stotram\nShiva Shadakshara Stotram\nShiva Shadakshari Stotram\nShiva Tandava Stotram\nShiva Upasana Mantra\nSrI Srisaila Mallikarjuna Suprabhatam\n0:00 / 0:00\nSettings\nTable of Contents\nLanguage\nAssamese\nBengali\nBrahmi\nGrantha\nGujarati\nGurmukhi\nKannada\nKharoshthi\nMalayalam\nNandinagari\nOriya\nSharada\nSiddham\nSinhala\nTamil\nTamil Extended\nTelugu\nTibetan\nUrdu\nField Visibility\nEnglish\nNotes\nDescription\nFont Size\nSmall\nRegular\nLarge\nSupport\nSend feedback\nJump to\nChapter\nSection\nVerse\nJump by verse reference\nTopics\n\nstatic /shloka/slug.htm; Gita -> staging (future: generate static for Gita too). -->\nShlokas\nGita\nTexts\nNo results found\nType at least 2 characters to search"
+      }
+    ]
+  }
+];
+
+// ── State ────────────────────────────────────────────────────────────────────
+const PARK_KEY = 'rudram_chamakam_park';
+let currentAnu = null;
+let currentVerse = null;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function h(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function getParked() { try { return JSON.parse(localStorage.getItem(PARK_KEY)||'null'); } catch(e){return null;} }
+
+// ── Build group nav (Anuvaka buttons) ────────────────────────────────────────
+function buildGroupNav() {
+  const gnav = document.getElementById('gnav');
+  DATA.forEach(anu => {
+    const btn = document.createElement('button');
+    btn.className = 'gb';
+    btn.id = 'gb_' + anu.num;
+    btn.textContent = 'Anuvaka ' + anu.num;
+    btn.onclick = () => selectAnuvaka(anu.num, null);
+    gnav.appendChild(btn);
+  });
+}
+
+// ── Select anuvaka: show bubble nav + first verse ─────────────────────────────
+function selectAnuvaka(anuNum, forceVerse) {
+  // Update group buttons
+  document.querySelectorAll('.gb').forEach(b => b.classList.remove('active'));
+  const gb = document.getElementById('gb_' + anuNum);
+  if (gb) gb.classList.add('active');
+
+  currentAnu = anuNum;
+
+  // Build verse bubbles for this anuvaka
+  buildVerseBubbles(anuNum);
+
+  // Show/hide anuvaka intro card
+  document.querySelectorAll('.anu-intro-card').forEach(c => c.style.display = 'none');
+  const intro = document.getElementById('ai_' + anuNum);
+  if (intro) intro.style.display = 'block';
+
+  // Show requested verse (or first)
+  const anu = DATA.find(d => d.num === anuNum);
+  if (anu && anu.verses.length > 0) {
+    const targetVerse = forceVerse !== null ? forceVerse : 1;
+    showVerse(anuNum, targetVerse);
+  }
+
+  document.getElementById('mc').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('parkBar').style.display = 'flex';
+}
+
+// ── Build verse bubble row ────────────────────────────────────────────────────
+function buildVerseBubbles(anuNum) {
+  const wrap = document.getElementById('snavWrap');
+  const snav = document.getElementById('snav');
+  const lbl  = document.getElementById('snavLabel');
+
+  snav.innerHTML = '';
+  wrap.classList.add('show');
+
+  const anu = DATA.find(d => d.num === anuNum);
+  if (!anu) return;
+
+  lbl.textContent = 'Anuvaka ' + anuNum + ' — ' + anu.subtitle + ' — tap a verse to open';
+
+  const parked = getParked();
+
+  anu.verses.forEach((v, vi) => {
+    const vNum = vi + 1;
+    const isParked = parked && parked.anu === anuNum && parked.verse === vNum;
+
+    const btn = document.createElement('button');
+    btn.className = 'sbb' + (isParked ? ' parked' : '');
+    btn.id = 'sbb_' + anuNum + '_' + vNum;
+    btn.textContent = vNum;
+    btn.title = 'Verse ' + vNum;
+    btn.onclick = () => showVerse(anuNum, vNum);
+    snav.appendChild(btn);
+  });
+}
+
+// ── Show a single verse card ──────────────────────────────────────────────────
+function showVerse(anuNum, vNum) {
+  // Hide all cards
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('vis'));
+
+  // Show target card
+  const card = document.getElementById('vc_' + anuNum + '_' + vNum);
+  if (card) card.classList.add('vis');
+
+  // Update bubble active state
+  document.querySelectorAll('.sbb').forEach(b => b.classList.remove('active'));
+  const sbb = document.getElementById('sbb_' + anuNum + '_' + vNum);
+  if (sbb) sbb.classList.add('active');
+
+  currentVerse = vNum;
+
+  // Scroll to card
+  const mc = document.getElementById('mc');
+  if (mc) mc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Toggle meaning box ────────────────────────────────────────────────────────
+function toggleMeaning(anuNum, vNum) {
+  const btn = document.getElementById('mb_' + anuNum + '_' + vNum);
+  const box = document.getElementById('mx_' + anuNum + '_' + vNum);
+  if (!btn || !box) return;
+  const open = box.classList.contains('open');
+  box.classList.toggle('open', !open);
+  btn.classList.toggle('open', !open);
+  const label = btn.querySelector('.lbl');
+  if (label) label.textContent = open ? 'Show Meaning' : 'Hide Meaning';
+}
+
+// ── Build all cards ───────────────────────────────────────────────────────────
+function buildCards() {
+  const mc = document.getElementById('mc');
+  const parked = getParked();
+
+  DATA.forEach(anu => {
+    // Anuvaka intro card (always hidden, shown when anuvaka selected)
+    const intro = document.createElement('div');
+    intro.className = 'anu-intro-card';
+    intro.id = 'ai_' + anu.num;
+    intro.style.display = 'none';
+    intro.innerHTML = `
+      <div class="anu-intro">
+        <div class="anu-tag">Anuvaka ${anu.num} of 11</div>
+        <div class="anu-title">${h(anu.title)}</div>
+        <div class="anu-sub">${h(anu.subtitle)}</div>
+        ${anu.summary ? `<div class="anu-summary">${h(anu.summary)}</div>` : ''}
+      </div>`;
+    mc.appendChild(intro);
+
+    // Verse cards
+    anu.verses.forEach((verse, vi) => {
+      const vNum = vi + 1;
+      const cardId = 'vc_' + anu.num + '_' + vNum;
+      const isParked = parked && parked.anu === anu.num && parked.verse === vNum;
+
+      const card = document.createElement('div');
+      card.className = 'card' + (isParked ? ' parked-card' : '');
+      card.id = cardId;
+
+      const sktHtml = verse.skt ? `
+        <div class="skt-box">
+          <div class="skt-text">${h(verse.skt)}</div>
+        </div>` : '';
+
+      const mngHtml = verse.mng ? `
+        <button class="mng-btn" id="mb_${anu.num}_${vNum}" onclick="toggleMeaning(${anu.num},${vNum})">
+          <span class="lbl">Show Meaning</span> <span class="arr">▼</span>
+        </button>
+        <div class="mng-box" id="mx_${anu.num}_${vNum}">
+          <div class="mng-text">${h(verse.mng)}</div>
+        </div>` : '';
+
+      card.innerHTML = `
+        <div class="card-head">
+          <div class="card-num">Anuvaka ${anu.num} • Verse ${vNum}</div>
+          <div class="card-title">${h(anu.subtitle)}</div>
+          <button class="park-btn${isParked ? ' parked' : ''}" id="pb_${anu.num}_${vNum}"
+            onclick="parkVerse(${anu.num},${vNum})">
+            ${isParked ? '🔖 Bookmarked' : '📍 Bookmark'}
+          </button>
+        </div>
+        <div class="card-body">
+          ${sktHtml}
+          ${mngHtml}
+        </div>`;
+
+      mc.appendChild(card);
+    });
+  });
+}
+
+// ── Park / Bookmark ───────────────────────────────────────────────────────────
+function parkVerse(anuNum, vNum) {
+  const park = { anu: anuNum, verse: vNum, ts: new Date().toLocaleString() };
+  localStorage.setItem(PARK_KEY, JSON.stringify(park));
+  updateParkUI(park);
+
+  // Update button on card
+  document.querySelectorAll('.park-btn').forEach(b => {
+    b.classList.remove('parked');
+    b.textContent = '📍 Bookmark';
+  });
+  const pb = document.getElementById('pb_' + anuNum + '_' + vNum);
+  if (pb) { pb.classList.add('parked'); pb.textContent = '🔖 Bookmarked'; }
+
+  // Update bubble
+  document.querySelectorAll('.sbb').forEach(b => b.classList.remove('parked'));
+  const sbb = document.getElementById('sbb_' + anuNum + '_' + vNum);
+  if (sbb) sbb.classList.add('parked');
+}
+
+function savePark() {
+  if (currentAnu && currentVerse) parkVerse(currentAnu, currentVerse);
+}
+
+function clearPark() {
+  localStorage.removeItem(PARK_KEY);
+  document.getElementById('parkLabel').textContent = '📍 No bookmark saved';
+  document.querySelectorAll('.park-btn').forEach(b => { b.classList.remove('parked'); b.textContent = '📍 Bookmark'; });
+  document.querySelectorAll('.sbb').forEach(b => b.classList.remove('parked'));
+}
+
+function loadPark() {
+  const p = getParked();
+  if (p) updateParkUI(p);
+}
+
+function updateParkUI(p) {
+  document.getElementById('parkLabel').textContent =
+    `📍 Bookmarked: Anuvaka ${p.anu} • Verse ${p.verse}  (${p.ts})`;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildGroupNav();
+buildCards();
+loadPark();
+selectAnuvaka(1, 1);
+</script>
+<div style="position:fixed;bottom:14px;right:14px;z-index:300;"><a href="index.html" style="display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#8B1A1A,#C0392B);color:#fff;text-decoration:none;padding:8px 15px;border-radius:20px;font-family:Georgia,serif;font-size:.78rem;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.28);letter-spacing:.5px;transition:all .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">🏠 Home</a></div>
+</body>
+</html>
