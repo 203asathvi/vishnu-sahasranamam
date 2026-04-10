@@ -17,7 +17,7 @@
 body { font-family:'Georgia',serif; background:var(--bg); color:var(--dark); min-height:100vh; padding-bottom:60px; }
 
 /* ── Header ─────────────────────────────────────────────── */
-.header {
+.header { position:relative;
   background:linear-gradient(135deg,var(--deep) 0%,var(--red) 55%,var(--gold) 100%);
   color:#fff; text-align:center; padding:22px 16px 16px;
   position:sticky; top:0; z-index:100;
@@ -165,6 +165,109 @@ body { font-family:'Georgia',serif; background:var(--bg); color:var(--dark); min
   .sbb { width:33px; height:33px; font-size:.75rem; }
   .header h1 { font-size:1.2rem; }
 }
+
+/* ── Home link in header ──────────────────────────────────── */
+.header-home {
+  position:absolute; top:50%; right:14px; transform:translateY(-50%);
+  display:flex; align-items:center; gap:5px;
+  background:rgba(255,255,255,.15); border:1.5px solid rgba(255,255,255,.45);
+  border-radius:18px; padding:5px 12px;
+  color:#fff; text-decoration:none; font-size:.75rem; font-weight:700;
+  letter-spacing:.5px; transition:all .2s;
+}
+.header-home:hover { background:rgba(255,255,255,.28); }
+
+/* ── Note variables ──────────────────────────────────────────── */
+:root {
+  --note-bg:#f0f7ff; --note-bd:#90b8e0; --note-btn:#2e6da4;
+}
+
+/* ── Has-notes indicator on verse bubble ─────────────────────── */
+.sbb.has-notes::before {
+  content:"✏"; font-size:8px; position:absolute; bottom:-5px; right:-5px;
+  background:var(--note-btn); color:#fff; border-radius:50%;
+  width:14px; height:14px; display:flex; align-items:center; justify-content:center;
+}
+
+/* ── Notes section inside card ───────────────────────────────── */
+.notes-sec { border-top:1.5px dashed #c8d8f0; margin-top:4px; padding-top:11px; }
+.notes-hd  { display:flex; align-items:center; gap:7px; margin-bottom:7px; }
+.notes-title { font-size:12px; font-weight:700; text-transform:uppercase;
+  letter-spacing:1.2px; color:var(--note-btn); }
+.saved-badge { font-size:11px; background:#e8f0fb; color:var(--note-btn);
+  padding:2px 8px; border-radius:10px; margin-left:auto; display:none; }
+.saved-badge.show { display:inline; }
+.note-ta { width:100%; min-height:76px; border:1.5px solid var(--note-bd);
+  border-radius:8px; padding:9px 12px; font-size:13px; font-family:Georgia,serif;
+  color:#1a2a3a; background:var(--note-bg); resize:vertical; outline:none; line-height:1.6; }
+.note-ta:focus { border-color:var(--note-btn); box-shadow:0 0 0 3px rgba(46,109,164,.12); }
+.note-ta::placeholder { color:#a0b8d0; font-style:italic; }
+.note-actions { display:flex; gap:8px; margin-top:7px; flex-wrap:wrap; align-items:center; }
+.btn-save { background:var(--note-btn); color:#fff; border:none; border-radius:8px;
+  padding:7px 16px; font-size:12.5px; font-weight:700; cursor:pointer;
+  font-family:Georgia,serif; transition:all .18s; }
+.btn-save:hover { background:#1a5290; }
+.btn-clr  { background:#fff; color:#888; border:1.5px solid #ccc;
+  border-radius:8px; padding:7px 12px; font-size:12.5px; cursor:pointer;
+  font-family:Georgia,serif; }
+.saved-msg { font-size:12px; color:var(--note-btn); font-style:italic; display:none; }
+.saved-msg.show { display:inline; }
+
+/* ── Notes Panel ─────────────────────────────────────────────── */
+.notes-panel { max-width:860px; margin:0 auto 14px; padding:0 20px; display:none; }
+.notes-panel.show { display:block; }
+.notes-panel-inner { background:#f0f7ff; border:1.5px solid var(--note-bd);
+  border-radius:12px; padding:15px 18px; }
+.np-title { font-size:13px; font-weight:700; color:var(--note-btn);
+  margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.np-close { margin-left:auto; background:none; border:none; color:#888;
+  cursor:pointer; font-size:14px; }
+.np-list  { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.np-item  { background:#fff; border:1px solid #c0d4ec; border-radius:8px;
+  padding:9px 13px; font-size:13px; }
+.np-item .ni-hd  { color:var(--saffron); font-weight:700; margin-bottom:3px; }
+.np-item .ni-txt { color:#2a3a4a; font-size:12.5px; line-height:1.6; white-space:pre-line; }
+.np-item .ni-del { float:right; background:none; border:none; color:#aaa;
+  cursor:pointer; font-size:13px; margin-left:8px; }
+.np-item .ni-del:hover { color:#c44; }
+.np-empty { color:#88a0b8; font-style:italic; font-size:13px; }
+
+/* ── Fixed FAB + Back-to-top ─────────────────────────────────── */
+.notes-fab { position:fixed; bottom:60px; left:24px; z-index:99;
+  background:var(--note-btn); color:#fff; border:none; border-radius:24px;
+  padding:9px 16px; font-size:13px; font-weight:700; cursor:pointer;
+  display:flex; align-items:center; gap:6px;
+  box-shadow:0 4px 16px rgba(46,109,164,.35); transition:all .2s;
+  font-family:Georgia,serif; }
+.notes-fab:hover { background:#1a5290; transform:translateY(-2px); }
+.fab-badge { background:#fff; color:var(--note-btn); border-radius:50%;
+  width:20px; height:20px; display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; }
+.btt { position:fixed; bottom:60px; right:24px; z-index:99; width:44px; height:44px;
+  border-radius:50%; background:var(--gold); color:#fff; border:none;
+  font-size:22px; cursor:pointer; display:none; align-items:center;
+  justify-content:center; box-shadow:0 4px 16px rgba(150,80,0,.35); transition:all .2s; }
+.btt.show  { display:flex; }
+.btt:hover { background:var(--saffron); transform:translateY(-2px); }
+
+
+/* ── Resume / Parked Banner ──────────────────────────────────── */
+#resumeBanner { display:none; background:linear-gradient(90deg,#0f4d24,#1a7a3a);
+  color:#fff; padding:12px 20px; align-items:center; gap:12px;
+  flex-wrap:wrap; justify-content:center; }
+#resumeBanner.show { display:flex; }
+.rb-icon { font-size:22px; flex-shrink:0; }
+.rb-text { font-size:14px; font-weight:600; flex:1; min-width:160px; }
+.rb-text .rb-sub   { font-size:11px; opacity:.8; display:block; margin-top:2px; font-weight:400; }
+.rb-text .rb-verse { font-size:12px; color:#b8f0c8; display:block; margin-top:3px; font-weight:500; }
+.rb-open  { background:#fff; color:var(--park); border:none; border-radius:8px;
+  padding:8px 18px; font-size:13px; font-weight:700; cursor:pointer;
+  font-family:Georgia,serif; transition:all .18s; white-space:nowrap; }
+.rb-open:hover { background:var(--park-lt); transform:translateY(-1px); }
+.rb-clear { background:rgba(255,255,255,.15); color:#fff;
+  border:1.5px solid rgba(255,255,255,.4); border-radius:8px;
+  padding:8px 12px; font-size:12px; cursor:pointer; font-family:Georgia,serif; }
+
 </style>
 </head>
 <body>
@@ -173,6 +276,19 @@ body { font-family:'Georgia',serif; background:var(--bg); color:var(--dark); min
   <span class="header-om">ॐ</span>
   <h1>Sri Rudram — Chamakam</h1>
   <h2>Taittirīya Saṃhitā • Kṛṣṇa Yajur Veda • 11 Anuvakas • Cha Me Prayer</h2>
+<a class="header-home" href="index.html">&#127968; Home</a>
+</div>
+
+<!-- Resume Banner (shown when a verse is bookmarked) -->
+<div id="resumeBanner">
+  <div class="rb-icon">🔖</div>
+  <div class="rb-text">
+    <span id="rbTitle">Anuvaka 1 · Verse 1</span>
+    <span class="rb-sub">→ Click to re-open this bookmarked verse</span>
+    <span class="rb-verse" id="rbVerse"></span>
+  </div>
+  <button class="rb-open" id="rbOpenBtn" onclick="openParked()">Open Verse →</button>
+  <button class="rb-clear" onclick="clearPark()">✕ Clear</button>
 </div>
 
 <!-- Anuvaka (group) navigation -->
@@ -662,6 +778,24 @@ function buildCards() {
           <div class="mng-text">${h(verse.mng)}</div>
         </div>` : '';
 
+      const noteKey = anu.num + '_' + vNum;
+      const savedNote = getNotes()[noteKey];
+      const notesSecHtml = `
+        <div class="notes-sec">
+          <div class="notes-hd">
+            <span class="notes-title">✏ My Notes</span>
+            <span class="saved-badge${savedNote ? ' show' : ''}" id="sbadge_${noteKey}">Saved ✓</span>
+          </div>
+          <textarea class="note-ta" id="ta_${noteKey}"
+            placeholder="Add your personal notes, reflections, or commentary here…"
+          >${savedNote ? h(savedNote.text) : ''}</textarea>
+          <div class="note-actions">
+            <button class="btn-save" onclick="handleSaveNote('${noteKey}',${anu.num},${vNum})">💾 Save Note</button>
+            <button class="btn-clr"  onclick="handleClearNote('${noteKey}',${anu.num},${vNum})">✕ Clear</button>
+            <span class="saved-msg" id="smsg_${noteKey}">Note saved ✓</span>
+          </div>
+        </div>`;
+
       card.innerHTML = `
         <div class="card-head">
           <div class="card-num">Anuvaka ${anu.num} • Verse ${vNum}</div>
@@ -674,6 +808,7 @@ function buildCards() {
         <div class="card-body">
           ${sktHtml}
           ${mngHtml}
+          ${notesSecHtml}
         </div>`;
 
       mc.appendChild(card);
@@ -710,6 +845,7 @@ function clearPark() {
   document.getElementById('parkLabel').textContent = '📍 No bookmark saved';
   document.querySelectorAll('.park-btn').forEach(b => { b.classList.remove('parked'); b.textContent = '📍 Bookmark'; });
   document.querySelectorAll('.sbb').forEach(b => b.classList.remove('parked'));
+  document.getElementById('resumeBanner').classList.remove('show');
 }
 
 function loadPark() {
@@ -720,6 +856,23 @@ function loadPark() {
 function updateParkUI(p) {
   document.getElementById('parkLabel').textContent =
     `📍 Bookmarked: Anuvaka ${p.anu} • Verse ${p.verse}  (${p.ts})`;
+  // Resume banner
+  document.getElementById('rbTitle').textContent =
+    'Anuvaka ' + p.anu + ' \u00b7 Verse ' + p.verse;
+  var anu = DATA.find(function(a){return a.num===p.anu;});
+  var versePreview = '';
+  if (anu && anu.verses[p.verse-1] && anu.verses[p.verse-1].skt) {
+    var skt = anu.verses[p.verse-1].skt.split('\n')[0];
+    versePreview = skt.length > 80 ? skt.substring(0,80) + '...' : skt;
+  }
+  document.getElementById('rbVerse').textContent = versePreview;
+  document.getElementById('rbOpenBtn').textContent = 'Open Verse ' + p.verse + ' \u2192';
+  document.getElementById('resumeBanner').classList.add('show');
+}
+
+function openParked() {
+  var p = getParked();
+  if (p) selectAnuvaka(p.anu, p.verse);
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -727,7 +880,99 @@ buildGroupNav();
 buildCards();
 loadPark();
 selectAnuvaka(1, 1);
+
+// ══════════════════════════════════════════
+// NOTES
+// ══════════════════════════════════════════
+const NOTE_KEY = 'rudram_chamakam_notes';
+function getNotes(){try{return JSON.parse(localStorage.getItem(NOTE_KEY)||'{}')}catch(e){return {}}}
+function setNotes(n){localStorage.setItem(NOTE_KEY,JSON.stringify(n));}
+function saveNote(key,text,anuNum,verseNum){
+  var notes=getNotes();
+  if(text.trim()){notes[key]={text:text.trim(),anuNum:anuNum,verseNum:verseNum,ts:Date.now()};}
+  else{delete notes[key];}
+  setNotes(notes);updateNotesBadge();
+  var sbb=document.getElementById('sbb_'+anuNum+'_'+verseNum);
+  if(sbb)sbb.classList.toggle('has-notes',!!notes[key]);
+}
+function updateNotesBadge(){
+  document.getElementById('noteCount').textContent=Object.keys(getNotes()).length;
+}
+function toggleNotes(){
+  var p=document.getElementById('notesPanel');
+  if(!p.classList.contains('show'))renderNotesPanel();
+  p.classList.toggle('show');
+}
+function renderNotesPanel(){
+  var notes=getNotes();var list=document.getElementById('notesList');
+  var keys=Object.keys(notes).sort(function(a,b){
+    return (notes[a].anuNum||0)-(notes[b].anuNum||0)||
+           (notes[a].verseNum||0)-(notes[b].verseNum||0);
+  });
+  if(!keys.length){
+    list.innerHTML='<li class="np-empty">No notes yet. Open a verse and add notes below the meaning.</li>';
+    return;
+  }
+  list.innerHTML=keys.map(function(k){
+    var it=notes[k];
+    return '<li class="np-item">'
+      +'<button class="ni-del" onclick="deleteNote(\'' +k+ '\')" title="Delete">&#x2715;</button>'
+      +'<div class="ni-hd">Anuvaka '+it.anuNum+' &middot; Verse '+it.verseNum+'</div>'
+      +'<div class="ni-txt">'+h(it.text)+'</div>'
+      +'</li>';
+  }).join('');
+}
+function deleteNote(key){
+  var notes=getNotes();var n=notes[key];delete notes[key];setNotes(notes);
+  renderNotesPanel();updateNotesBadge();
+  if(n){var sbb=document.getElementById('sbb_'+n.anuNum+'_'+n.verseNum);
+    if(sbb)sbb.classList.remove('has-notes');}
+}
+function handleSaveNote(key,anuNum,verseNum){
+  var ta=document.getElementById('ta_'+key);if(!ta)return;
+  saveNote(key,ta.value,anuNum,verseNum);
+  var msg=document.getElementById('smsg_'+key);
+  if(msg){msg.classList.add('show');setTimeout(function(){msg.classList.remove('show');},1800);}
+}
+function handleClearNote(key,anuNum,verseNum){
+  var ta=document.getElementById('ta_'+key);if(ta)ta.value='';
+  saveNote(key,'',anuNum,verseNum);
+}
+window.addEventListener('scroll',function(){
+  document.getElementById('btt').classList.toggle('show',window.scrollY>400);
+});
+// Init notes badge and restore has-notes indicators
+updateNotesBadge();
+(function(){
+  var notes=getNotes();
+  Object.keys(notes).forEach(function(k){
+    var n=notes[k];
+    if(n&&n.anuNum&&n.verseNum){
+      var sbb=document.getElementById('sbb_'+n.anuNum+'_'+n.verseNum);
+      if(sbb)sbb.classList.add('has-notes');
+    }
+  });
+})();
 </script>
-<div style="position:fixed;bottom:14px;right:14px;z-index:300;"><a href="index.html" style="display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#8B1A1A,#C0392B);color:#fff;text-decoration:none;padding:8px 15px;border-radius:20px;font-family:Georgia,serif;font-size:.78rem;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.28);letter-spacing:.5px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">&#127968; Home</a></div>
+
+<!-- Notes Panel -->
+<div class="notes-panel" id="notesPanel">
+  <div class="notes-panel-inner">
+    <div class="np-title">
+      ✏️ My Study Notes
+      <button class="np-close" onclick="toggleNotes()">✕ Close</button>
+    </div>
+    <ul class="np-list" id="notesList"></ul>
+  </div>
+</div>
+
+<!-- Notes FAB -->
+<button class="notes-fab" id="notesFab" onclick="toggleNotes()">
+  ✏️ My Notes <span class="fab-badge" id="noteCount">0</span>
+</button>
+
+<!-- Back to Top -->
+<button class="btt" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
 </body>
 </html>
